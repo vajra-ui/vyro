@@ -210,6 +210,33 @@ export const CommanderDashboard: React.FC = () => {
         </div>
       </header>
 
+      {/* Mobile Responsive Command Tab Bar */}
+      <div className="md:hidden flex items-center space-x-1.5 p-2 bg-[#080d1a] border-b border-slate-800 overflow-x-auto scrollbar-none font-mono text-[11px] shrink-0 z-20">
+        {(['SOS', 'CASES', 'TEAMS', 'REUNITE', 'ANALYTICS'] as CommanderTab[]).map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`px-3 py-1.5 rounded-lg whitespace-nowrap font-bold transition flex items-center space-x-1 shrink-0 ${
+              activeTab === tab
+                ? tab === 'REUNITE'
+                  ? 'bg-purple-600 text-white border border-purple-400 shadow-sm'
+                  : 'bg-slate-800 text-cyan-300 border border-cyan-500/40'
+                : 'text-slate-400 bg-slate-900/60 border border-slate-800 hover:text-white'
+            }`}
+          >
+            {tab === 'REUNITE' && <Heart className="w-3 h-3 fill-current text-pink-300" />}
+            <span>{tab === 'REUNITE' ? 'VYRO REUNITE™' : tab}</span>
+          </button>
+        ))}
+        <button
+          onClick={() => setPrimaryViewMode('3D_TWIN')}
+          className="px-2.5 py-1.5 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-400 font-bold whitespace-nowrap shrink-0 flex items-center space-x-1"
+        >
+          <Layers className="w-3 h-3" />
+          <span>3D TWIN</span>
+        </button>
+      </div>
+
       {/* 3. Demo Center Bar (Section 29-32: REAL STATEFUL DEMOS) */}
       <div className="bg-[#0b1324] border-b border-slate-800/80 px-4 py-2 flex flex-wrap items-center justify-between gap-2 shrink-0 z-20 font-mono text-xs">
         <div className="flex items-center space-x-2">

@@ -11,10 +11,12 @@ import {
   Search,
   Package,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Compass
 } from 'lucide-react';
 
 export const ShelterDashboard: React.FC = () => {
+  const [mobileTab, setMobileTab] = useState<'SHELTER' | 'MAP'>('SHELTER');
   const { shelters, updateShelterOccupancy, triggerFlyTo, openFamilyModal } = useOperationalStore();
   const myShelter = shelters[0]; // Government Higher Secondary School
 
@@ -39,8 +41,36 @@ export const ShelterDashboard: React.FC = () => {
 
   return (
     <div className="relative w-full h-[calc(100vh-3.5rem)] flex flex-col md:flex-row overflow-hidden bg-[#080c14]">
+      {/* Mobile Top Segment Switcher */}
+      <div className="md:hidden flex items-center justify-around bg-[#0a1122] border-b border-slate-800 p-1.5 shrink-0 z-30 font-mono text-xs">
+        <button
+          onClick={() => setMobileTab('SHELTER')}
+          className={`flex-1 py-2 rounded-lg font-bold flex items-center justify-center space-x-1.5 transition ${
+            mobileTab === 'SHELTER'
+              ? 'bg-purple-500/20 text-purple-300 border border-purple-500/40 shadow-sm'
+              : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          <Home className="w-4 h-4 text-purple-400" />
+          <span>SHELTER ROSTER</span>
+        </button>
+        <button
+          onClick={() => setMobileTab('MAP')}
+          className={`flex-1 py-2 rounded-lg font-bold flex items-center justify-center space-x-1.5 transition ${
+            mobileTab === 'MAP'
+              ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm'
+              : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          <Compass className="w-4 h-4 text-cyan-400" />
+          <span>3D REFUGE ZONE</span>
+        </button>
+      </div>
+
       {/* Shelter Management HUD */}
-      <div className="w-full md:w-96 h-auto md:h-full bg-[#0a0f1d]/95 backdrop-blur-md border-r border-slate-800 p-4 flex flex-col justify-between z-20 text-xs overflow-y-auto shadow-2xl">
+      <div className={`w-full md:w-96 h-full bg-[#0a0f1d]/95 backdrop-blur-md border-r border-slate-800 p-3 sm:p-4 flex flex-col justify-between z-20 text-xs overflow-y-auto shadow-2xl ${
+        mobileTab === 'MAP' ? 'hidden md:flex' : 'flex'
+      }`}>
         <div className="space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-slate-800">
             <div>
@@ -159,7 +189,9 @@ export const ShelterDashboard: React.FC = () => {
       </div>
 
       {/* 3D Simulated City Centerpiece */}
-      <div className="relative flex-1 h-full overflow-hidden bg-[#050914]">
+      <div className={`relative flex-1 h-full overflow-hidden bg-[#050914] ${
+        mobileTab === 'SHELTER' ? 'hidden md:block' : 'block'
+      }`}>
         <SimulatedCityTwin3D isHeroMode={true} />
       </div>
     </div>

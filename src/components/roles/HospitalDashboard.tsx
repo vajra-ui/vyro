@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useOperationalStore } from '../../stores/operationalStore';
 import { SimulatedCityTwin3D } from '../map/SimulatedCityTwin3D';
 import { 
@@ -13,10 +13,12 @@ import {
   Truck,
   ArrowRight,
   ShieldCheck,
-  Send
+  Send,
+  Compass
 } from 'lucide-react';
 
 export const HospitalDashboard: React.FC = () => {
+  const [mobileTab, setMobileTab] = useState<'ER' | 'MAP'>('ER');
   const { 
     hospitals, 
     cases, 
@@ -49,8 +51,36 @@ export const HospitalDashboard: React.FC = () => {
 
   return (
     <div className="relative w-full h-[calc(100vh-3.5rem)] flex flex-col md:flex-row overflow-hidden bg-[#070b14] text-slate-100 font-sans">
+      {/* Mobile Top Segment Switcher */}
+      <div className="md:hidden flex items-center justify-around bg-[#0a1122] border-b border-slate-800 p-1.5 shrink-0 z-30 font-mono text-xs">
+        <button
+          onClick={() => setMobileTab('ER')}
+          className={`flex-1 py-2 rounded-lg font-bold flex items-center justify-center space-x-1.5 transition ${
+            mobileTab === 'ER'
+              ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm'
+              : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          <Building2 className="w-4 h-4 text-emerald-400" />
+          <span>ER INTAKE & BEDS</span>
+        </button>
+        <button
+          onClick={() => setMobileTab('MAP')}
+          className={`flex-1 py-2 rounded-lg font-bold flex items-center justify-center space-x-1.5 transition ${
+            mobileTab === 'MAP'
+              ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm'
+              : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          <Compass className="w-4 h-4 text-cyan-400" />
+          <span>3D TRAUMA MAP</span>
+        </button>
+      </div>
+
       {/* Hospital ER Left Panel */}
-      <div className="w-full md:w-[420px] h-auto md:h-full bg-[#081020]/95 backdrop-blur-md border-r border-slate-800 p-4 sm:p-5 flex flex-col justify-between z-20 text-xs overflow-y-auto shadow-2xl">
+      <div className={`w-full md:w-[420px] h-full bg-[#081020]/95 backdrop-blur-md border-r border-slate-800 p-3 sm:p-5 flex flex-col justify-between z-20 text-xs overflow-y-auto shadow-2xl ${
+        mobileTab === 'MAP' ? 'hidden md:flex' : 'flex'
+      }`}>
         <div className="space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-slate-800">
             <div>
@@ -191,7 +221,9 @@ export const HospitalDashboard: React.FC = () => {
       </div>
 
       {/* 3D Simulated City Centerpiece */}
-      <div className="relative flex-1 h-full overflow-hidden bg-[#050914]">
+      <div className={`relative flex-1 h-full overflow-hidden bg-[#050914] ${
+        mobileTab === 'ER' ? 'hidden md:block' : 'block'
+      }`}>
         <SimulatedCityTwin3D isHeroMode={true} />
       </div>
     </div>

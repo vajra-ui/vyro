@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import {
   Role,
   VictimCase,
+  CasePriority,
   RescueTeam,
   MedicalTeam,
   HospitalFacility,
@@ -227,6 +228,8 @@ export interface OperationalState {
   updateRescueTeamLocation: (teamId: string, coordinates: [number, number], accuracy: number) => void;
   updateShelterOccupancy: (shelterId: string, delta: number) => void;
   updateHospitalBeds: (hospitalId: string, bedDelta: number, icuDelta: number) => void;
+  updateMedicalTeamStatus: (teamId: string, status: MedicalTeam['status'], destinationHospitalId?: string) => void;
+  updateCaseTriage: (caseId: string, priority: CasePriority, medicalNeeds?: string, notes?: string) => void;
 
   // GPS & Offline Actions
   setGpsTracking: (active: boolean) => void;
@@ -1242,6 +1245,53 @@ export const useOperationalStore = create<OperationalState>((set, get) => {
             : h
         );
         const partial = { hospitals: updated };
+        broadcastChange(partial);
+        return partial;
+      });
+    },
+
+    updateMedicalTeamStatus: (teamId, status, destinationHospitalId) => {
+      set((state) => {
+        const now = new Date();
+        const timeStr = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')} IST`;
+        const updated = state.medicalTeams.map((m) =>
+          m.id === teamId
+            ? {
+                ...m,
+                status,
+                destinationHospitalId: destinationHospitalId || m.destinationHospitalId,
+                lastUpdate: timeStr
+              }
+            : m
+        );
+        const partial = { medicalTeams: updated };
+        broadcastChange(partial);
+        return partial;
+      });
+    },
+
+    updateCaseTriage: (caseId, priority, medicalNeeds, notes) => {
+      set((state) => {
+        const updatedCases = state.cases.map((c) =>
+          c.id === caseId
+            ? {
+                ...c,
+                priority,
+                medicalNeeds: medicalNeeds || c.medicalNeeds,
+                notes: notes ? `${c.notes} | ${notes}` : c.notes,
+                lastVerifiedAt: `${new Date().toLocaleTimeString()} IST`
+              }
+            : c
+        );
+        const newLog: AuditLogEntry = {
+          id: `LOG-${Date.now()}`,
+          timestamp: `${new Date().toLocaleTimeString()} IST`,
+          actor: 'Rapid EMS Paramedic MED-01',
+          role: 'MEDICAL',
+          action: 'TRIAGE_UPDATED',
+          details: `Case ${caseId} triage updated to ${priority}.`
+        };
+        const partial = { cases: updatedCases, auditLogs: [newLog, ...state.auditLogs] };
         broadcastChange(partial);
         return partial;
       });

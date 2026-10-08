@@ -37,6 +37,7 @@ export const RescuerDashboard: React.FC = () => {
   const assignedCase = cases.find((c) => c.id === myTeam.assignedMissionId) || cases[0];
 
   const [activeTab, setActiveTab] = useState<'RADAR' | 'SURVIVAL' | 'PACKET' | 'MESH'>('RADAR');
+  const [mobileTab, setMobileTab] = useState<'HUD' | 'MAP'>('HUD');
   const [beaconCount, setBeaconCount] = useState(0);
   const [lastBeaconTime, setLastBeaconTime] = useState<string | null>(null);
 
@@ -58,8 +59,36 @@ export const RescuerDashboard: React.FC = () => {
 
   return (
     <div className="relative w-full h-[calc(100vh-3.5rem)] flex flex-col md:flex-row overflow-hidden bg-[#070b14] text-slate-100 font-sans">
+      {/* Mobile Top Segment Switcher */}
+      <div className="md:hidden flex items-center justify-around bg-[#0a1122] border-b border-slate-800 p-1.5 shrink-0 z-30 font-mono text-xs">
+        <button
+          onClick={() => setMobileTab('HUD')}
+          className={`flex-1 py-2 rounded-lg font-bold flex items-center justify-center space-x-1.5 transition ${
+            mobileTab === 'HUD'
+              ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm'
+              : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          <Radar className="w-4 h-4 text-cyan-400" />
+          <span>TACTICAL RADAR</span>
+        </button>
+        <button
+          onClick={() => setMobileTab('MAP')}
+          className={`flex-1 py-2 rounded-lg font-bold flex items-center justify-center space-x-1.5 transition ${
+            mobileTab === 'MAP'
+              ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm'
+              : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          <Compass className="w-4 h-4 text-cyan-400" />
+          <span>3D MISSION MAP</span>
+        </button>
+      </div>
+
       {/* Tactical Mobile-First Left Panel */}
-      <div className="w-full md:w-[420px] h-auto md:h-full bg-[#081020]/95 backdrop-blur-md border-r border-slate-800 p-4 sm:p-5 flex flex-col justify-between z-20 text-xs overflow-y-auto shadow-2xl">
+      <div className={`w-full md:w-[420px] h-full bg-[#081020]/95 backdrop-blur-md border-r border-slate-800 p-3 sm:p-5 flex flex-col justify-between z-20 text-xs overflow-y-auto shadow-2xl ${
+        mobileTab === 'MAP' ? 'hidden md:flex' : 'flex'
+      }`}>
         <div className="space-y-4">
           {/* 1. "I'M STILL HERE" MICRO-BEACON */}
           <div className="p-3.5 rounded-2xl bg-gradient-to-r from-cyan-950/60 to-slate-900 border border-cyan-500/40 shadow-lg space-y-2">
@@ -276,7 +305,9 @@ export const RescuerDashboard: React.FC = () => {
       </div>
 
       {/* Main Tactical 3D Viewport in Rescuer View */}
-      <div className="relative flex-1 h-full overflow-hidden bg-[#050914]">
+      <div className={`relative flex-1 h-full overflow-hidden bg-[#050914] ${
+        mobileTab === 'HUD' ? 'hidden md:block' : 'block'
+      }`}>
         <SimulatedCityTwin3D isHeroMode={true} />
       </div>
     </div>

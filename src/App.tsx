@@ -22,7 +22,7 @@ export const App: React.FC = () => {
   const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
 
   return (
-    <div className="w-screen h-screen flex flex-col bg-[#070b14] text-slate-100 overflow-hidden font-sans select-none">
+    <div className="w-full h-[100dvh] flex flex-col bg-[#070b14] text-slate-100 overflow-hidden font-sans select-none">
       {/* 1. Cinematic Professional Splash Screen on Boot */}
       {isSplashActive && <SplashScreen />}
 
