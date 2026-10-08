@@ -1,0 +1,365 @@
+import { SupportedLanguage, DisasterType } from '../types/vyro';
+
+export interface TranslationDictionary {
+  appName: string;
+  tagline: string;
+  taglineShort: string;
+  networkStatus: string;
+  areYouSafe: string;
+  getHelp: string;
+  reportEmergency: string;
+  trackMyCase: string;
+  findSafeShelter: string;
+  familyReunification: string;
+  operationalAccess: string;
+  gpsLocating: string;
+  locationFound: string;
+  locationUnavailable: string;
+  whatHappened: string;
+  howManyPeople: string;
+  sendSos: string;
+  voiceReport: string;
+  textReport: string;
+  listening: string;
+  tapToSpeak: string;
+  enterDetails: string;
+  caseCreated: string;
+  yourLocation: string;
+  emergencyType: string;
+  priority: string;
+  caseStatus: string;
+  directHelpline: string;
+  sosReceived: string;
+  aiTriaged: string;
+  rescuerAssigned: string;
+  enRoute: string;
+  victimLocated: string;
+  medicalCare: string;
+  hospitalized: string;
+  sheltered: string;
+  reunited: string;
+  closed: string;
+  disasters: Record<DisasterType, string>;
+  sampleVoicePrompt: string;
+}
+
+export const TRANSLATIONS: Record<SupportedLanguage, TranslationDictionary> = {
+  en: {
+    appName: 'VYRO',
+    tagline: 'Disasters create chaos. VYRO creates continuity.',
+    taglineShort: 'From First SOS to Final Reunion',
+    networkStatus: 'RESCUE NETWORK ACTIVE',
+    areYouSafe: 'ARE YOU SAFE?',
+    getHelp: '🚨 GET HELP NOW',
+    reportEmergency: 'REPORT INCIDENT',
+    trackMyCase: 'TRACK MY CASE',
+    findSafeShelter: 'FIND SAFE SHELTER',
+    familyReunification: 'FAMILY REUNIFICATION',
+    operationalAccess: 'OPERATIONAL ACCESS',
+    gpsLocating: 'ACQUIRING REAL GPS...',
+    locationFound: 'LOCATION ACQUIRED',
+    locationUnavailable: 'LOCATION PERMISSION REQUIRED',
+    whatHappened: 'WHAT HAPPENED?',
+    howManyPeople: 'HOW MANY PEOPLE NEED HELP?',
+    sendSos: 'TRANSMIT SOS BEACON',
+    voiceReport: 'VOICE REPORT',
+    textReport: 'TEXT REPORT',
+    listening: 'LISTENING... SPEAK IN YOUR LANGUAGE',
+    tapToSpeak: 'TAP TO RECORD VOICE',
+    enterDetails: 'Describe your emergency, trapped location, or medical needs...',
+    caseCreated: 'EMERGENCY BEACON TRANSMITTED',
+    yourLocation: 'YOUR REAL LOCATION',
+    emergencyType: 'DISASTER CATEGORY',
+    priority: 'TRIAGE PRIORITY',
+    caseStatus: 'RESCUE STATUS',
+    directHelpline: 'DIRECT RESCUE HELPLINE',
+    sosReceived: 'SOS RECEIVED',
+    aiTriaged: 'AI TRIAGED',
+    rescuerAssigned: 'UNIT ASSIGNED',
+    enRoute: 'EN ROUTE',
+    victimLocated: 'VICTIM LOCATED',
+    medicalCare: 'MEDICAL CARE',
+    hospitalized: 'HOSPITALIZED',
+    sheltered: 'SHELTERED',
+    reunited: 'FAMILY REUNITED',
+    closed: 'CASE CLOSED',
+    disasters: {
+      FLOOD: 'FLOOD / WATER INUNDATION',
+      FIRE: 'FIRE / EXPLOSION',
+      EARTHQUAKE: 'EARTHQUAKE / TREMOR',
+      TSUNAMI: 'TSUNAMI / SURGE',
+      CYCLONE: 'CYCLONE / HIGH WIND',
+      LANDSLIDE: 'LANDSLIDE / MUDSLIDE',
+      ACCIDENT: 'TRANSPORT ACCIDENT',
+      MEDICAL: 'ACUTE MEDICAL EMERGENCY',
+      TRAPPED: 'TRAPPED IN STRUCTURE',
+      OTHER: 'OTHER DISASTER'
+    },
+    sampleVoicePrompt: 'Water entered the house. 4 people trapped on the terrace. Send help immediately.'
+  },
+  ta: {
+    appName: 'VYRO',
+    tagline: 'பேரழிவு குழப்பத்தை உருவாக்குகிறது. VYRO தொடர்ச்சியை உருவாக்குகிறது.',
+    taglineShort: 'முதல் SOS முதல் குடும்ப மறுஇணைவு வரை',
+    networkStatus: 'மீட்பு நெட்வொர்க் தயார்',
+    areYouSafe: 'நீங்கள் பாதுகாப்பாக இருக்கிறீர்களா?',
+    getHelp: '🚨 உடனடியாக உதவி பெறுங்கள்',
+    reportEmergency: 'அவசர நிலை பதிவு',
+    trackMyCase: 'என் வழக்கை கண்காணிக்கவும்',
+    findSafeShelter: 'பாதுகாப்பான முகாம்',
+    familyReunification: 'குடும்ப மறுஇணைவு',
+    operationalAccess: 'அதிகாரிகள் அணுகல்',
+    gpsLocating: 'GPS இருப்பிடத்தை தேடுகிறது...',
+    locationFound: 'இருப்பிடம் உறுதி செய்யப்பட்டது',
+    locationUnavailable: 'GPS அனுமதி தேவை',
+    whatHappened: 'என்ன நடந்தது?',
+    howManyPeople: 'எத்தனை பேருக்கு உதவி தேவை?',
+    sendSos: 'SOS எச்சரிக்கை அனுப்பவும்',
+    voiceReport: 'குரல் அறிக்கை',
+    textReport: 'எழுத்து அறிக்கை',
+    listening: 'கேட்கிறது... தமிழில் பேசுங்கள்',
+    tapToSpeak: 'குரல் பதிவு செய்ய தட்டவும்',
+    enterDetails: 'உங்கள் ஆபத்து அல்லது தேவையான மருத்துவ உதவியை விவரிக்கவும்...',
+    caseCreated: 'SOS எச்சரிக்கை வெற்றிகரமாக அனுப்பப்பட்டது',
+    yourLocation: 'உங்கள் நேரடி இருப்பிடம்',
+    emergencyType: 'பேரழிவு வகை',
+    priority: 'அவசர நிலை தரம்',
+    caseStatus: 'மீட்பு நிலை',
+    directHelpline: 'நேரடி மீட்பு உதவி எண்',
+    sosReceived: 'SOS பெறப்பட்டது',
+    aiTriaged: 'AI மதிப்பீடு முடிந்தது',
+    rescuerAssigned: 'மீட்புக்குழு நியமிக்கப்பட்டது',
+    enRoute: 'குழு புறப்பட்டது',
+    victimLocated: 'பாதிக்கப்பட்டவர் கண்டுபிடிக்கப்பட்டார்',
+    medicalCare: 'மருத்துவ உதவி',
+    hospitalized: 'மருத்துவமனையில் அனுமதிக்கப்பட்டார்',
+    sheltered: 'நிவாரண முகாமில்',
+    reunited: 'குடும்பத்துடன் இணைந்தார்',
+    closed: 'வழக்கு முடிந்தது',
+    disasters: {
+      FLOOD: 'வெள்ளம் / நீர் பெருக்கு',
+      FIRE: 'தீ விபத்து',
+      EARTHQUAKE: 'நிலநடுக்கம்',
+      TSUNAMI: 'சுனாமி பேரலை',
+      CYCLONE: 'புயல் / சூறாவளி',
+      LANDSLIDE: 'நிலச்சரிவு',
+      ACCIDENT: 'விபத்து',
+      MEDICAL: 'மருத்துவ அவசரம்',
+      TRAPPED: 'கட்டிடத்தில் சிக்கியுள்ளார்',
+      OTHER: 'பிற அவசர நிலை'
+    },
+    sampleVoicePrompt: 'தண்ணி வீட்டுக்குள்ள வந்துருச்சு. நாலு பேர் மேல மாடியில் இருக்காங்க. உடனே வாங்க.'
+  },
+  hi: {
+    appName: 'VYRO',
+    tagline: 'आपदा अराजकता पैदा करती है। VYRO निरंतरता बनाता है।',
+    taglineShort: 'पहले SOS से अंतिम पुनर्मिलन तक',
+    networkStatus: 'बचाव नेटवर्क सक्रिय',
+    areYouSafe: 'क्या आप सुरक्षित हैं?',
+    getHelp: '🚨 अभी मदद पाएं',
+    reportEmergency: 'आपातकाल रिपोर्ट करें',
+    trackMyCase: 'अपना केस ट्रैक करें',
+    findSafeShelter: 'सुरक्षित आश्रय खोजें',
+    familyReunification: 'परिवार पुनर्मिलन',
+    operationalAccess: 'कमांड एक्सेस',
+    gpsLocating: 'जीपीएस खोजा जा रहा है...',
+    locationFound: 'सटीक स्थान मिल गया',
+    locationUnavailable: 'जीपीएस अनुमति आवश्यक',
+    whatHappened: 'क्या हुआ है?',
+    howManyPeople: 'कितने लोगों को मदद चाहिए?',
+    sendSos: 'SOS अलर्ट भेजें',
+    voiceReport: 'आवाज से रिपोर्ट',
+    textReport: 'लिखकर रिपोर्ट',
+    listening: 'सुन रहा है... बोलिए',
+    tapToSpeak: 'आवाज रिकॉर्ड करने के लिए दबाएं',
+    enterDetails: 'अपनी स्थिति, फंसे होने या चिकित्सा जरूरत के बारे में बताएं...',
+    caseCreated: 'SOS सफलतापूर्वक भेजा गया',
+    yourLocation: 'आपका स्थान',
+    emergencyType: 'आपदा प्रकार',
+    priority: 'प्राथमिकता',
+    caseStatus: 'बचाव स्थिति',
+    directHelpline: 'हेल्पलाइन नंबर',
+    sosReceived: 'SOS मिला',
+    aiTriaged: 'AI आकलन पूरा',
+    rescuerAssigned: 'टीम आवंटित',
+    enRoute: 'टीम रास्ते में है',
+    victimLocated: 'स्थान मिला',
+    medicalCare: 'चिकित्सा सहायता',
+    hospitalized: 'अस्पताल में भर्ती',
+    sheltered: 'आश्रय स्थल में',
+    reunited: 'परिवार मिला',
+    closed: 'केस बंद',
+    disasters: {
+      FLOOD: 'बाढ़ / जलभराव',
+      FIRE: 'आग / विस्फोट',
+      EARTHQUAKE: 'भूकंप',
+      TSUNAMI: 'सुनामी',
+      CYCLONE: 'चक्रवात / आंधी',
+      LANDSLIDE: 'भूस्खलन',
+      ACCIDENT: 'दुर्घटना',
+      MEDICAL: 'चिकित्सा आपातकाल',
+      TRAPPED: 'इमारत में फंसे',
+      OTHER: 'अन्य आपदा'
+    },
+    sampleVoicePrompt: 'बाढ़ का पानी घर में घुस गया है। 4 लोग छत पर फंसे हुए हैं। तुरंत नाव भेजें।'
+  },
+  te: {
+    appName: 'VYRO',
+    tagline: 'విపత్తు అల్లకల్లోలం సృష్టిస్తుంది. VYRO సహాయాన్ని అందిస్తుంది.',
+    taglineShort: 'మొదటి SOS నుండి కుటుంబ కలయిక వరకు',
+    networkStatus: 'రెస్క్యూ నెట్‌వర్క్ సిద్ధంగా ఉంది',
+    areYouSafe: 'మీరు సురక్షితంగా ఉన్నారా?',
+    getHelp: '🚨 వెంటనే సహాయం పొందండి',
+    reportEmergency: 'సమస్యను నివేదించండి',
+    trackMyCase: 'కేసు ట్రాక్ చేయండి',
+    findSafeShelter: 'సురక్షిత పునరావాస కేంద్రం',
+    familyReunification: 'కుటుంబ పునఃకలయిక',
+    operationalAccess: 'ఆఫీసర్ లాగిన్',
+    gpsLocating: 'GPS శోధిస్తోంది...',
+    locationFound: 'ఖచ్చితమైన ప్రదేశం దొరికింది',
+    locationUnavailable: 'GPS అనుమతి అవసరం',
+    whatHappened: 'ఏమి జరిగింది?',
+    howManyPeople: 'ఎంతమందికి సహాయం కావాలి?',
+    sendSos: 'SOS బీకాన్ పంపండి',
+    voiceReport: 'వాయిస్ రిపోర్ట్',
+    textReport: 'టెక్స్ట్ రిపోర్ట్',
+    listening: 'వింటోంది... మాట్లాడండి',
+    tapToSpeak: 'మాట్లాడటానికి నొక్కండి',
+    enterDetails: 'సమస్యను వివరంగా చెప్పండి...',
+    caseCreated: 'SOS విజయవంతంగా నమోదైంది',
+    yourLocation: 'మీ ప్రదేశం',
+    emergencyType: 'విపత్తు రకం',
+    priority: 'ప్రాధాన్యత',
+    caseStatus: 'రెస్క్యూ స్థితి',
+    directHelpline: 'రెస్క్యూ హెల్ప్‌లైన్',
+    sosReceived: 'SOS అందింది',
+    aiTriaged: 'AI విశ్లేషణ పూర్తయింది',
+    rescuerAssigned: 'బృందం కేటాయించబడింది',
+    enRoute: 'బృందం బయలుదేరింది',
+    victimLocated: 'బాధితుడిని గుర్తించారు',
+    medicalCare: 'వైద్య సాయం',
+    hospitalized: 'ఆసుపత్రిలో చేర్చబడ్డారు',
+    sheltered: 'పునరావాస కేంద్రంలో',
+    reunited: 'కుటుంబం కలిసింది',
+    closed: 'కేసు ముగిసింది',
+    disasters: {
+      FLOOD: 'వరదలు / నీరు ముంచెత్తడం',
+      FIRE: 'అగ్నిప్రమాదం',
+      EARTHQUAKE: 'భూకంపం',
+      TSUNAMI: 'సునామీ',
+      CYCLONE: 'తుఫాను',
+      LANDSLIDE: 'కొండచరియలు విరిగిపడటం',
+      ACCIDENT: 'ప్రమాదం',
+      MEDICAL: 'వైద్య అత్యవసరం',
+      TRAPPED: 'భవనంలో చిక్కుకున్నారు',
+      OTHER: 'ఇతర విపత్తు'
+    },
+    sampleVoicePrompt: 'వరద నీరు ఇంట్లోకి వచ్చింది. మేము మేడపైన నలుగురం చిక్కుకున్నాము. సహాయం పంపండి.'
+  },
+  kn: {
+    appName: 'VYRO',
+    tagline: 'ವಿಪತ್ತು ಅವ್ಯವಸ್ಥೆಯನ್ನು ಸೃಷ್ಟಿಸುತ್ತದೆ. VYRO ನಿರಂತರತೆಯನ್ನು ನೀಡುತ್ತದೆ.',
+    taglineShort: 'ಮೊದಲ SOS ನಿಂದ ಕುಟುಂಬ ಮರುಮಿಲನದವರೆಗೆ',
+    networkStatus: 'ಪಾರುಗಾಣಿಕಾ ಜಾಲ ಸಕ್ರಿಯ',
+    areYouSafe: 'ನೀವು ಸುರಕ್ಷಿತವಾಗಿದ್ದೀರಾ?',
+    getHelp: '🚨 ತಕ್ಷಣ ಸಹಾಯ ಪಡೆಯಿರಿ',
+    reportEmergency: 'ತುರ್ತು ವರದಿ ಮಾಡಿ',
+    trackMyCase: 'ಕೇಸ್ ಟ್ರ್ಯಾಕ್ ಮಾಡಿ',
+    findSafeShelter: 'ಸುರಕ್ಷಿತ ಆಶ್ರಯ ತಾಣ',
+    familyReunification: 'ಕುಟುಂಬ ಪುನರ್ಮಿಲನ',
+    operationalAccess: 'ಕಮಾಂಡ್ ಪ್ರವೇಶ',
+    gpsLocating: 'GPS ಹುಡುಕಲಾಗುತ್ತಿದೆ...',
+    locationFound: 'ನಿಖರ ಸ್ಥಳ ಪತ್ತೆಯಾಗಿದೆ',
+    locationUnavailable: 'GPS ಅನುಮತಿ ಅಗತ್ಯವಿದೆ',
+    whatHappened: 'ಏನಾಯಿತು?',
+    howManyPeople: 'ಎಷ್ಟು ಜನರಿಗೆ ಸಹಾಯ ಬೇಕು?',
+    sendSos: 'SOS ಕಳುಹಿಸಿ',
+    voiceReport: 'ಧ್ವನಿ ವರದಿ',
+    textReport: 'ಪಠ್ಯ ವರದಿ',
+    listening: 'ಕೇಳುತ್ತಿದೆ... ಮಾತನಾಡಿ',
+    tapToSpeak: 'ರೆಕಾರ್ಡ್ ಮಾಡಲು ಟ್ಯಾಪ್ ಮಾಡಿ',
+    enterDetails: 'ತುರ್ತು ಪರಿಸ್ಥಿತಿಯನ್ನು ವಿವರಿಸಿ...',
+    caseCreated: 'SOS ಯಶಸ್ವಿಯಾಗಿ ಕಳುಹಿಸಲಾಗಿದೆ',
+    yourLocation: 'ನಿಮ್ಮ ಸ್ಥಳ',
+    emergencyType: 'ವಿಪತ್ತು ವಿಧ',
+    priority: 'ಆದ್ಯತೆ',
+    caseStatus: 'ರಕ್ಷಣಾ ಸ್ಥಿತಿ',
+    directHelpline: 'ರಕ್ಷಣಾ ಸಹಾಯವಾಣಿ',
+    sosReceived: 'SOS ಸ್ವೀಕರಿಸಲಾಗಿದೆ',
+    aiTriaged: 'AI ವಿಶ್ಲೇಷಣೆ ಮುಗಿದಿದೆ',
+    rescuerAssigned: 'ತಂಡ ನಿಯೋಜಿಸಲಾಗಿದೆ',
+    enRoute: 'ತಂಡ ಹೊರಟಿದೆ',
+    victimLocated: 'ಸ್ಥಳ ಪತ್ತೆಯಾಗಿದೆ',
+    medicalCare: 'ವೈದ್ಯಕೀಯ ನೆರವು',
+    hospitalized: 'ಆಸ್ಪತ್ರೆಗೆ ದಾಖಲಿಸಲಾಗಿದೆ',
+    sheltered: 'ಆಶ್ರಯ ತಾಣದಲ್ಲಿದ್ದಾರೆ',
+    reunited: 'ಕುಟುಂಬ ಸೇರಿದೆ',
+    closed: 'ಕೇಸ್ ಮುಕ್ತಾಯ',
+    disasters: {
+      FLOOD: 'ಪ್ರವಾಹ / ನೀರು ನುಗ್ಗಿದೆ',
+      FIRE: 'ಬೆಂಕಿ ದುರಂತ',
+      EARTHQUAKE: 'ಭೂಕಂಪ',
+      TSUNAMI: 'ಸುನಾಮಿ',
+      CYCLONE: 'ಚಂಡಮಾರುತ',
+      LANDSLIDE: 'ಭೂಕುಸಿತ',
+      ACCIDENT: 'ಅಪಘಾತ',
+      MEDICAL: 'ವೈದ್ಯಕೀಯ ತುರ್ತು',
+      TRAPPED: 'ಕಟ್ಟಡದಲ್ಲಿ ಸಿಲುಕಿಕೊಂಡಿದ್ದಾರೆ',
+      OTHER: 'ಇತರ ವಿಪತ್ತು'
+    },
+    sampleVoicePrompt: 'ಮನೆಗೆ ನೀರು ನುಗ್ಗಿದೆ. 4 ಜನರು ಮೇಲ್ಛಾವಣಿಯಲ್ಲಿ ಸಿಲುಕಿಕೊಂಡಿದ್ದೇವೆ. ದಯವಿಟ್ಟು ಬೇಗ ಬನ್ನಿ.'
+  },
+  ml: {
+    appName: 'VYRO',
+    tagline: 'ദുരന്തങ്ങൾ അരാജകത്വം സൃഷ്ടിക്കുന്നു. വൈറോ തുടർച്ച ഉറപ്പാക്കുന്നു.',
+    taglineShort: 'ആദ്യ SOS മുതൽ കുടുംബ പുനസ്സമാഗമം വരെ',
+    networkStatus: 'രക്ഷാപ്രവർത്തന ശൃംഖല സജീവം',
+    areYouSafe: 'നിങ്ങൾ സുരക്ഷിതനാണോ?',
+    getHelp: '🚨 അടിയന്തര സഹായം തേടുക',
+    reportEmergency: 'അടിയന്തര വിവരം നൽകുക',
+    trackMyCase: 'കേസ് ട്രാക്ക് ചെയ്യുക',
+    findSafeShelter: 'സുരക്ഷിത ക്യാമ്പ് കണ്ടെത്തുക',
+    familyReunification: 'കുടുംബ പുനസ്സമാഗമം',
+    operationalAccess: 'ഓഫീസർ പ്രവേശനം',
+    gpsLocating: 'GPS സ്ഥാനം കണ്ടെത്തുന്നു...',
+    locationFound: 'കൃത്യമായ സ്ഥാനം ലഭിച്ചു',
+    locationUnavailable: 'GPS അനുമതി ആവശ്യമാണ്',
+    whatHappened: 'എന്താണ് സംഭവിച്ചത്?',
+    howManyPeople: 'എത്ര പേർക്ക് സഹായം വേണം?',
+    sendSos: 'SOS സന്ദേശം അയക്കുക',
+    voiceReport: 'ശബ്ദ സന്ദേശം',
+    textReport: 'എഴുതി നൽകുക',
+    listening: 'കേൾക്കുന്നു... സംസാരിക്കൂ',
+    tapToSpeak: 'ശബ്ദം റെക്കോർഡ് ചെയ്യാൻ അമർത്തുക',
+    enterDetails: 'ആപത്തോ വൈദ്യസഹായ ആവശ്യങ്ങളോ വ്യക്തമാക്കൂ...',
+    caseCreated: 'SOS വിജയകരമായി അയച്ചു',
+    yourLocation: 'നിങ്ങളുടെ കൃത്യമായ സ്ഥാനം',
+    emergencyType: 'ദുരന്ത വിഭാഗം',
+    priority: 'മുൻഗണന',
+    caseStatus: 'രക്ഷാപ്രവർത്തന നില',
+    directHelpline: 'രക്ഷാപ്രവർത്തന ഹെൽപ്പ്‌ലൈൻ',
+    sosReceived: 'SOS ലഭിച്ചു',
+    aiTriaged: 'AI പരിശോധന പൂർത്തിയായി',
+    rescuerAssigned: 'സംഘത്തെ നിയോഗിച്ചു',
+    enRoute: 'സംഘം യാത്രതിരിച്ചു',
+    victimLocated: 'ആളെ കണ്ടെത്തി',
+    medicalCare: 'ചികിത്സ നൽകുന്നു',
+    hospitalized: 'ആശുപത്രിയിൽ പ്രവേശിപ്പിച്ചു',
+    sheltered: 'ക്യാമ്പിലേക്ക് മാറ്റി',
+    reunited: 'കുടുംബവുമായി ഒത്തുചേർന്നു',
+    closed: 'കേസ് പൂർത്തിയായി',
+    disasters: {
+      FLOOD: 'പ്രളയം / വെള്ളപ്പൊക്കം',
+      FIRE: 'തീപിടുത്തം',
+      EARTHQUAKE: 'ഭൂകമ്പം',
+      TSUNAMI: 'സുനാമി',
+      CYCLONE: 'ചുഴലിക്കാറ്റ്',
+      LANDSLIDE: 'ഉരുൾപൊട്ടൽ / മണ്ണിടിച്ചിൽ',
+      ACCIDENT: 'വാഹനാപകടം',
+      MEDICAL: 'അടിയന്തര ചികിത്സ',
+      TRAPPED: 'കെട്ടിടത്തിൽ കുടുങ്ങി',
+      OTHER: 'മറ്റ് ദുരന്തം'
+    },
+    sampleVoicePrompt: 'വെള്ളം വീടിനുള്ളിൽ കയറി. നാല് പേർ മുകൾനിലയിൽ കുടുങ്ങിയിരിക്കുകയാണ്. ഉടൻ സഹായം എത്തിക്കൂ.'
+  }
+};
