@@ -99,14 +99,22 @@ export const CitizenDashboard: React.FC = () => {
           /* ========================================================================= */
           <div className="space-y-4 animate-in fade-in duration-300">
             {/* Header */}
-            <div className="text-center pt-2 pb-1">
-              <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyan-950/60 border border-cyan-800/40 text-cyan-400 text-xs font-mono tracking-widest uppercase mb-2">
+            <div className="flex flex-col items-center text-center pt-2 pb-1">
+              <div className="relative mb-2">
+                <div className="absolute -inset-2 rounded-2xl bg-gradient-to-tr from-cyan-500/25 via-sky-500/30 to-purple-600/25 blur-lg animate-pulse"></div>
+                <img 
+                  src="/logo-icon.png" 
+                  alt="VYRO Logo" 
+                  className="relative w-16 h-16 rounded-2xl object-contain bg-[#000b1f] border border-cyan-500/40 shadow-xl shadow-cyan-500/20 p-1" 
+                />
+              </div>
+              <div className="inline-flex items-center space-x-2 px-3 py-0.5 rounded-full bg-cyan-950/60 border border-cyan-800/40 text-cyan-400 text-[10px] font-mono tracking-widest uppercase mb-1">
                 <span>VYRO EMERGENCY NETWORK</span>
               </div>
-              <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-wider">
                 VYRO
               </h1>
-              <p className="text-xs font-mono text-cyan-300 tracking-wider uppercase mt-0.5">
+              <p className="text-[11px] font-mono text-cyan-300 tracking-widest uppercase mt-0.5">
                 VIGILANT RESCUE OPERATIONS
               </p>
             </div>

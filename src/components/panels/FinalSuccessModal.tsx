@@ -27,9 +27,9 @@ export const FinalSuccessModal: React.FC = () => {
         {/* Glow decoration */}
         <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-64 h-64 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none" />
 
-        {/* Success Emblem */}
-        <div className="mx-auto w-20 h-20 rounded-full bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center mb-6 shadow-xl shadow-emerald-500/30">
-          <ShieldCheck className="w-10 h-10 text-emerald-400 animate-pulse" />
+        {/* Success Official Logo Emblem */}
+        <div className="mx-auto w-24 h-24 rounded-2xl bg-[#000b1f] border-2 border-emerald-400/80 p-2 flex items-center justify-center mb-6 shadow-2xl shadow-emerald-500/40">
+          <img src="/logo-icon.png" alt="VYRO Logo" className="w-full h-full object-contain" />
         </div>
 
         {/* Three Verification Badges */}

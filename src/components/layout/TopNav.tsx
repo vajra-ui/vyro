@@ -45,9 +45,14 @@ export const TopNav: React.FC<{ onOpenRoleModal: () => void }> = ({ onOpenRoleMo
     <header className="h-14 bg-[#0a0f1d]/95 backdrop-blur-md border-b border-slate-800/80 px-3 sm:px-4 flex items-center justify-between z-30 select-none shadow-md">
       {/* Brand & Incident Section */}
       <div className="flex items-center space-x-3 sm:space-x-4">
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-sky-600 to-cyan-400 flex items-center justify-center font-black tracking-wider text-white shadow-lg shadow-sky-500/20">
-            V
+        <div className="flex items-center space-x-2.5">
+          <div className="relative group cursor-pointer" onClick={() => setPrimaryViewMode('COMMAND_CENTER')}>
+            <img 
+              src="/logo-icon.png" 
+              alt="VYRO Logo" 
+              className="w-9 h-9 rounded-xl object-contain bg-[#000b1f] border border-cyan-500/40 shadow-md shadow-cyan-500/20 p-0.5 group-hover:border-cyan-400 transition" 
+            />
+            <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-[#0a0f1d] animate-pulse"></div>
           </div>
           <div>
             <div className="flex items-center space-x-1.5 sm:space-x-2">

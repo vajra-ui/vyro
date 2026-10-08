@@ -89,18 +89,25 @@ export const RoleSwitcherModal: React.FC<{ isOpen: boolean; onClose: () => void 
       <div className="relative w-full max-w-2xl bg-[#0c1220] border border-slate-700/80 rounded-xl shadow-2xl p-6 overflow-hidden">
         {/* Header */}
         <div className="flex items-start justify-between pb-4 border-b border-slate-800">
-          <div>
-            <div className="flex items-center space-x-2">
-              <h2 className="text-lg font-bold text-slate-100 tracking-wide">
-                Role Authentication & Demo Access
-              </h2>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold">
-                DEMO CREDENTIALS
-              </span>
+          <div className="flex items-center space-x-3">
+            <img 
+              src="/logo-icon.png" 
+              alt="VYRO Logo" 
+              className="w-10 h-10 rounded-xl object-contain bg-[#000b1f] border border-cyan-500/40 shadow-lg shadow-cyan-500/20 p-0.5 shrink-0" 
+            />
+            <div>
+              <div className="flex items-center space-x-2">
+                <h2 className="text-lg font-bold text-slate-100 tracking-wide">
+                  Role Authentication & Demo Access
+                </h2>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold">
+                  DEMO CREDENTIALS
+                </span>
+              </div>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Select a pre-configured role to view the tactical operational environment through that role's interface.
+              </p>
             </div>
-            <p className="text-xs text-slate-400 mt-1">
-              Select a pre-configured role to view the tactical operational environment through that role's interface.
-            </p>
           </div>
           <button
             onClick={onClose}

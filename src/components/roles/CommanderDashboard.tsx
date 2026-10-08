@@ -148,8 +148,13 @@ export const CommanderDashboard: React.FC = () => {
       <header className="h-14 bg-[#090e1c] border-b border-slate-800/80 px-4 flex items-center justify-between shrink-0 z-20">
         {/* Brand */}
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-sky-600 to-cyan-400 flex items-center justify-center font-black text-white text-sm shadow-md">
-            V
+          <div className="relative group cursor-pointer" onClick={() => setPrimaryViewMode('3D_TWIN')}>
+            <img 
+              src="/logo-icon.png" 
+              alt="VYRO Logo" 
+              className="w-9 h-9 rounded-xl object-contain bg-[#000b1f] border border-cyan-500/40 shadow-md shadow-cyan-500/20 p-0.5 group-hover:border-cyan-400 transition" 
+            />
+            <div className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-500 border border-[#090e1c] animate-pulse"></div>
           </div>
           <div>
             <div className="flex items-center space-x-2">

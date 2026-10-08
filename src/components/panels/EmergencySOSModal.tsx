@@ -145,9 +145,11 @@ export const EmergencySOSModal: React.FC<EmergencySOSModalProps> = ({ isOpen, on
         {/* Top Header */}
         <div className="p-4 bg-gradient-to-r from-rose-950 via-slate-900 to-rose-950 border-b border-rose-500/40 flex items-center justify-between">
           <div className="flex items-center space-x-2.5">
-            <div className="w-8 h-8 rounded-lg bg-rose-600 flex items-center justify-center text-white shadow animate-pulse">
-              <AlertTriangle className="w-5 h-5" />
-            </div>
+            <img 
+              src="/logo-icon.png" 
+              alt="VYRO Logo" 
+              className="w-8 h-8 rounded-lg object-contain bg-[#000b1f] border border-rose-500/60 shadow p-0.5" 
+            />
             <div>
               <h2 className="text-sm font-mono font-black text-rose-200 tracking-wider">
                 TRANSMIT RESCUE SOS

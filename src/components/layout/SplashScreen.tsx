@@ -90,29 +90,15 @@ export const SplashScreen: React.FC = () => {
 
       {/* Center Cinematic Brand Block */}
       <div className="flex flex-col items-center text-center px-4 z-10 max-w-xl">
-        {/* Brand Shield Logo with glowing pulse */}
-        <div className="relative mb-6">
-          <div className="absolute -inset-2 rounded-2xl bg-gradient-to-tr from-cyan-500/20 via-sky-500/30 to-rose-500/20 blur-xl animate-pulse"></div>
-          <div className="relative w-20 h-20 rounded-2xl bg-[#090f1d] border border-slate-700/80 flex items-center justify-center shadow-2xl">
-            <span className="text-4xl font-black bg-gradient-to-br from-white via-cyan-200 to-sky-400 bg-clip-text text-transparent tracking-tighter">
-              V
-            </span>
-            <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-rose-600 border-2 border-[#090f1d] flex items-center justify-center text-[10px] font-bold text-white shadow">
-              !
-            </div>
-          </div>
+        {/* Official Brand Logo with cinematic tactical glow */}
+        <div className="relative mb-5 group">
+          <div className="absolute -inset-4 rounded-3xl bg-gradient-to-tr from-cyan-500/30 via-sky-500/35 to-purple-600/30 blur-2xl animate-pulse"></div>
+          <img 
+            src="/logo.png" 
+            alt="VYRO — Vigilant Rescue Operations" 
+            className="relative w-52 sm:w-60 h-auto rounded-2xl shadow-2xl border border-cyan-500/40 bg-[#000b1f] object-contain p-2.5" 
+          />
         </div>
-
-        {/* Center Title & Tagline */}
-        <h1 className="text-4xl sm:text-5xl font-black tracking-[0.25em] text-white font-sans drop-shadow-lg">
-          VYRO
-        </h1>
-        <div className="mt-2 text-xs sm:text-sm font-mono tracking-[0.3em] uppercase text-cyan-300 font-bold">
-          VIGILANT RESCUE OPERATIONS
-        </div>
-        <p className="mt-3 text-sm text-slate-400 font-serif italic">
-          "From First SOS to Final Reunion"
-        </p>
 
         {/* Core Philosophy Quote */}
         <div className="mt-4 px-4 py-1.5 rounded-full bg-slate-900/80 border border-slate-800 text-[11px] font-mono text-slate-400 tracking-wide">

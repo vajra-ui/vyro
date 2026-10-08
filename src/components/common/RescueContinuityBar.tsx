@@ -118,7 +118,11 @@ export const RescueContinuityBar: React.FC<{ compact?: boolean }> = ({ compact =
       {/* Top Title & "What happens next?" Callout */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-2 font-mono text-xs">
         <div className="flex items-center space-x-2">
-          <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+          <img 
+            src="/logo-icon.png" 
+            alt="VYRO" 
+            className="w-5 h-5 rounded-md object-contain bg-[#000b1f] border border-cyan-500/40 p-0.5 shrink-0" 
+          />
           <span className="text-[10px] sm:text-xs font-black tracking-widest text-slate-300 uppercase">
             RESCUE CONTINUITY CHAIN
           </span>

@@ -137,8 +137,15 @@ export const VyroReunitePanel: React.FC<VyroReunitePanelProps> = ({ onClose, isM
       {/* 1. TOP HEADER BANNER */}
       <header className="p-4 bg-gradient-to-r from-purple-950/90 via-slate-900 to-indigo-950/90 border-b border-purple-500/40 shrink-0 flex flex-wrap items-center justify-between gap-3 shadow-lg">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-pink-500 flex items-center justify-center text-white shadow-lg shadow-purple-600/30">
-            <Heart className="w-5 h-5 fill-current" />
+          <div className="relative">
+            <img 
+              src="/logo-icon.png" 
+              alt="VYRO Logo" 
+              className="w-10 h-10 rounded-xl object-contain bg-[#000b1f] border border-purple-400 shadow-lg shadow-purple-600/30 p-0.5" 
+            />
+            <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-pink-600 border border-[#050b18] flex items-center justify-center text-[8px] text-white font-bold">
+              ❤
+            </div>
           </div>
           <div>
             <div className="flex items-center space-x-2">

@@ -149,9 +149,11 @@ export const AIEmergencyCompilerModal: React.FC = () => {
         {/* Top Header */}
         <div className="p-4 sm:p-5 bg-gradient-to-r from-[#0d1a33] via-[#0b162c] to-[#091122] border-b border-slate-800 flex items-center justify-between shrink-0">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-400 flex items-center justify-center text-cyan-300 shadow-lg shadow-cyan-500/20">
-              <Cpu className="w-6 h-6 animate-pulse" />
-            </div>
+            <img 
+              src="/logo-icon.png" 
+              alt="VYRO Logo" 
+              className="w-10 h-10 rounded-xl object-contain bg-[#000b1f] border border-cyan-400 shadow-lg shadow-cyan-500/20 p-0.5" 
+            />
             <div>
               <div className="flex items-center space-x-2">
                 <h2 className="text-base sm:text-lg font-black tracking-wider text-white uppercase">
