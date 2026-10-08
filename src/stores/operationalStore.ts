@@ -223,6 +223,7 @@ export interface OperationalState {
   // Field & Operational Updates
   updateVictimStatus: (id: string, status: VictimCase['status'], notes?: string) => void;
   assignTeamToVictim: (teamId: string, victimId: string) => void;
+  dispatchTeamToCase: (caseId: string, teamId?: string, isManual?: boolean) => void;
   updateRescueTeamLocation: (teamId: string, coordinates: [number, number], accuracy: number) => void;
   updateShelterOccupancy: (shelterId: string, delta: number) => void;
   updateHospitalBeds: (hospitalId: string, bedDelta: number, icuDelta: number) => void;
@@ -1575,6 +1576,200 @@ export const useOperationalStore = create<OperationalState>((set, get) => {
       set(partial);
       broadcastChange(partial);
       return caseId;
+    },
+
+    dispatchTeamToCase: (caseId: string, teamId?: string, isManual = false) => {
+      const state = get();
+      const timeStr = `${new Date().getHours().toString().padStart(2, '0')}:${new Date().getMinutes().toString().padStart(2, '0')} IST`;
+      const targetCase = state.cases.find((c) => c.id === caseId) || state.cases[0];
+      if (!targetCase) return;
+
+      // 1. Determine team
+      let chosenTeamId = teamId;
+      let chosenTeamName = 'RESCUE ALPHA';
+      let chosenVehicle = 'R-07 (Amphibious Rig)';
+      let chosenEta = 4;
+
+      if (!chosenTeamId) {
+        // AI Auto-selection based on incident needs
+        const desc = (targetCase.medicalNeeds + ' ' + targetCase.notes + ' ' + targetCase.locationName).toLowerCase();
+        if (targetCase.disasterType === 'MEDICAL' || desc.includes('burn') || desc.includes('cardiac') || desc.includes('hypothermia')) {
+          chosenTeamId = 'MED-ALPHA-01';
+          chosenTeamName = 'Rapid EMS Med-01';
+          chosenVehicle = 'AMB-04 (ALS Ambulance)';
+          chosenEta = 6;
+        } else if (desc.includes('roof') || desc.includes('aerial') || desc.includes('winch')) {
+          chosenTeamId = 'AIR-01';
+          chosenTeamName = 'Coast Guard Helo Air-1';
+          chosenVehicle = 'AIR-01 (Helicopter)';
+          chosenEta = 4;
+        } else if (desc.includes('debris') || desc.includes('blocked') || desc.includes('rubble')) {
+          chosenTeamId = 'NDRF-UNIT-01';
+          chosenTeamName = 'NDRF Battalion 04';
+          chosenVehicle = 'TAC-04 (All-Terrain 4x4)';
+          chosenEta = 12;
+        } else {
+          chosenTeamId = 'TEAM-ALPHA-04';
+          chosenTeamName = 'Rescue Alpha';
+          chosenVehicle = 'R-07 (Amphibious Rig)';
+          chosenEta = 4;
+        }
+      } else {
+        const teamObj = state.rescueTeams.find((t) => t.id === chosenTeamId);
+        if (teamObj) {
+          chosenTeamName = teamObj.name || teamObj.callsign;
+          chosenVehicle = teamObj.vehicleType || 'Rescue Unit';
+        } else if (chosenTeamId === 'AIR-01') {
+          chosenTeamName = 'Coast Guard Helo Air-1';
+          chosenVehicle = 'AIR-01 (Helicopter)';
+          chosenEta = 4;
+        } else if (chosenTeamId === 'TEAM-BRAVO-02') {
+          chosenTeamName = 'Team Bravo-02';
+          chosenVehicle = 'Z-02 (Zodiac Raft)';
+          chosenEta = 8;
+        } else if (chosenTeamId === 'NDRF-UNIT-01') {
+          chosenTeamName = 'NDRF Battalion 04';
+          chosenVehicle = 'TAC-04 (All-Terrain 4x4)';
+          chosenEta = 12;
+        } else if (chosenTeamId === 'MED-ALPHA-01') {
+          chosenTeamName = 'Rapid EMS Med-01';
+          chosenVehicle = 'AMB-04 (ALS Ambulance)';
+          chosenEta = 10;
+        } else if (chosenTeamId === 'TEAM-ALPHA-04') {
+          chosenTeamName = 'Rescue Alpha';
+          chosenVehicle = 'R-07 (Amphibious Rig)';
+          chosenEta = 4;
+        }
+      }
+
+      // 2. Update Cases: set assignedTeamId and status to ASSIGNED
+      const updatedCases = state.cases.map((c) =>
+        c.id === caseId
+          ? {
+              ...c,
+              status: 'ASSIGNED' as const,
+              assignedTeamId: chosenTeamId,
+              lastVerifiedAt: timeStr
+            }
+          : c
+      );
+
+      // 3. Update Rescue Teams
+      let teamFound = false;
+      let updatedTeams = state.rescueTeams.map((t) => {
+        if (t.id === chosenTeamId) {
+          teamFound = true;
+          return {
+            ...t,
+            status: 'EN_ROUTE' as const,
+            assignedMissionId: caseId,
+            lastLocationUpdate: timeStr
+          };
+        }
+        return t;
+      });
+
+      if (!teamFound && chosenTeamId) {
+        updatedTeams = [
+          ...updatedTeams,
+          {
+            id: chosenTeamId,
+            name: chosenTeamName,
+            callsign: chosenTeamName,
+            status: 'EN_ROUTE' as const,
+            coordinates: targetCase.coordinates,
+            accuracyMeters: 10,
+            lastLocationUpdate: timeStr,
+            assignedMissionId: caseId,
+            personnelCount: 5,
+            vehicleType: 'AMPHIBIOUS' as const,
+            trackingActive: true,
+            isSimulated: true,
+            batteryLevel: 92
+          }
+        ];
+      }
+
+      // 4. Update Rescue Chains: advance RESCUER_ASSIGNED stage
+      const existingChain = state.rescueChains[caseId] || {
+        caseId,
+        stages: [
+          { stageId: 'SOS_RECEIVED', label: 'SOS Sent', status: 'VERIFIED' as const, timestamp: timeStr },
+          { stageId: 'AI_TRIAGED', label: 'Command Received & Triaged', status: 'VERIFIED' as const, timestamp: timeStr },
+          { stageId: 'COMMANDER_DISPATCH', label: 'Rescue Assignment', status: 'PENDING' as const },
+          { stageId: 'RESCUER_ASSIGNED', label: 'Rescue Assignment', status: 'PENDING' as const },
+          { stageId: 'RESCUER_EN_ROUTE', label: 'Rescue Team En Route', status: 'PENDING' as const },
+          { stageId: 'VICTIM_LOCATED', label: 'Victim Found', status: 'PENDING' as const },
+          { stageId: 'MEDICAL_HANDOFF', label: 'Medical Handoff', status: 'PENDING' as const },
+          { stageId: 'HOSPITAL_ADMITTED', label: 'Hospital', status: 'PENDING' as const },
+          { stageId: 'SHELTER_TRANSFERRED', label: 'Shelter', status: 'PENDING' as const },
+          { stageId: 'FAMILY_REUNITED', label: 'Family Reunion', status: 'PENDING' as const },
+          { stageId: 'CASE_CLOSED', label: 'Case Closed', status: 'PENDING' as const }
+        ]
+      };
+
+      const updatedStages = existingChain.stages.map((st) => {
+        if (st.stageId === 'COMMANDER_DISPATCH' || st.stageId === 'RESCUER_ASSIGNED') {
+          return {
+            ...st,
+            status: 'VERIFIED' as const,
+            timestamp: timeStr,
+            actor: isManual ? 'Commander Manual Dispatch' : 'VYRO AI Dispatcher',
+            notes: `Assigned ${chosenTeamName} (${chosenVehicle}, ETA ${chosenEta}m)`
+          };
+        }
+        if (st.stageId === 'RESCUER_EN_ROUTE') {
+          return {
+            ...st,
+            status: 'IN_PROGRESS' as const,
+            timestamp: timeStr,
+            actor: chosenTeamName,
+            notes: `En route via optimal route (ETA ${chosenEta}m)`
+          };
+        }
+        return st;
+      });
+
+      const updatedChains = {
+        ...state.rescueChains,
+        [caseId]: { ...existingChain, stages: updatedStages }
+      };
+
+      // 5. Update Active Rescue Tracking
+      const tracking = {
+        teamId: chosenTeamId,
+        teamName: chosenTeamName,
+        vehicleId: chosenVehicle,
+        speedKmh: 42,
+        distanceKm: 2.8,
+        etaMinutes: chosenEta,
+        heading: 126,
+        gpsAccuracyMeters: 5,
+        updatedSecAgo: 1,
+        status: 'EN ROUTE' as const
+      };
+
+      // 6. Audit Log
+      const auditLog = {
+        id: `LOG-${Date.now()}`,
+        timestamp: timeStr,
+        actor: isManual ? 'Commander Console' : 'AI Dispatch Engine',
+        role: 'COMMANDER' as const,
+        action: isManual ? 'MANUAL_DISPATCH_CONFIRMED' : 'AI_AUTO_DISPATCH_EXECUTED',
+        details: `${chosenTeamName} (${chosenVehicle}) assigned to Case ${caseId}. Method: ${isManual ? 'Manual Selection' : 'AI Auto-Dispatch'}. ETA: ${chosenEta} min.`
+      };
+
+      const partial: Partial<OperationalState> = {
+        cases: updatedCases,
+        rescueTeams: updatedTeams,
+        rescueChains: updatedChains,
+        activeRescueTracking: tracking,
+        activeRescueStage: 'RESPONDER',
+        auditLogs: [auditLog, ...state.auditLogs]
+      };
+
+      set(partial);
+      broadcastChange(partial);
     },
 
     triggerAssignDemo: () => {
