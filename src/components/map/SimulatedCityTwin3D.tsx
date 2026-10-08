@@ -24,7 +24,9 @@ import {
   AlertTriangle,
   Play,
   Pause,
-  Heart
+  Heart,
+  Check,
+  Building2
 } from 'lucide-react';
 
 interface SimulatedCityTwinProps {
@@ -112,14 +114,13 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
     canvas.height = 128;
     const ctx = canvas.getContext('2d');
     if (ctx) {
-      ctx.fillStyle = '#111827';
+      ctx.fillStyle = '#0f172a';
       ctx.fillRect(0, 0, 128, 128);
 
       for (let y = 6; y < 128; y += 14) {
         for (let x = 6; x < 128; x += 14) {
           const rand = Math.random();
-          if (rand > 0.45) {
-            // Bright warm amber, gold, or cyan office glow
+          if (rand > 0.4) {
             ctx.fillStyle = rand > 0.85 ? '#38bdf8' : rand > 0.65 ? '#fbbf24' : '#fef08a';
             ctx.fillRect(x, y, 8, 8);
           } else {
@@ -144,11 +145,11 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
     const width = container.clientWidth || window.innerWidth;
     const height = container.clientHeight || window.innerHeight;
 
-    // 1. Scene & Atmosphere (Lightened fog for maximum clarity)
+    // 1. Scene & Atmosphere
     const scene = new THREE.Scene();
     sceneRef.current = scene;
     scene.background = new THREE.Color(0x070e1c);
-    scene.fog = new THREE.FogExp2(0x070e1c, 0.0016); // Thinned out so all buildings & colors shine
+    scene.fog = new THREE.FogExp2(0x070e1c, 0.0016); // High-clarity atmospheric haze
 
     // 2. Camera
     const camera = new THREE.PerspectiveCamera(45, width / height, 1, 1400);
@@ -177,14 +178,14 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
     controls.dampingFactor = 0.05;
     controls.maxPolarAngle = Math.PI / 2.05;
     controls.minDistance = 15;
-    controls.maxDistance = 400;
+    controls.maxDistance = 420;
     controls.target.set(0, 10, 0);
 
-    // 5. High-Visibility Multi-Source Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 2.2); // Clean, bright ambient light
+    // 5. Multi-Directional Crisp Illumination
+    const ambientLight = new THREE.AmbientLight(0xffffff, 2.2);
     scene.add(ambientLight);
 
-    const dirLight = new THREE.DirectionalLight(0xffffff, 2.2); // Bright primary sun/illumination
+    const dirLight = new THREE.DirectionalLight(0xffffff, 2.2);
     dirLight.position.set(90, 160, 80);
     dirLight.castShadow = true;
     dirLight.shadow.mapSize.width = 2048;
@@ -197,7 +198,6 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
     dirLight.shadow.camera.bottom = -180;
     scene.add(dirLight);
 
-    // Fill light from opposite side to remove dark shadows on buildings
     const fillLight = new THREE.DirectionalLight(0x7dd3fc, 1.3);
     fillLight.position.set(-100, 120, -90);
     scene.add(fillLight);
@@ -205,7 +205,7 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
     const skyHemi = new THREE.HemisphereLight(0x93c5fd, 0x1e293b, 1.4);
     scene.add(skyHemi);
 
-    // 6. Ground Plane & Tactical Grid Network
+    // 6. Ground Plane & Grid Network
     const groundGeo = new THREE.PlaneGeometry(420, 420, 32, 32);
     const groundMat = new THREE.MeshStandardMaterial({
       color: 0x0a1426,
@@ -217,12 +217,11 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
     ground.receiveShadow = true;
     scene.add(ground);
 
-    // Tactical Grid
     const gridHelper = new THREE.GridHelper(380, 76, 0x0284c7, 0x1e293b);
     gridHelper.position.y = 0.08;
     scene.add(gridHelper);
 
-    // 7. River / Canal Channel (with clear, vivid water)
+    // 7. River Channel & Waterfront Esplanades
     const riverGeo = new THREE.PlaneGeometry(400, 36, 64, 16);
     const riverMat = new THREE.MeshStandardMaterial({
       color: 0x0284c7,
@@ -237,7 +236,6 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
     scene.add(river);
     waterMeshRef.current = river;
 
-    // Embankments & Wide Waterfront Esplanades
     const curbMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.6 });
     const curbGeo = new THREE.BoxGeometry(400, 1.2, 3);
     const curbNorth = new THREE.Mesh(curbGeo, curbMat);
@@ -248,17 +246,15 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
     curbSouth.position.set(0, 0.6, 18);
     scene.add(curbSouth);
 
-    // 8. Wide Arched Bridges Crossing River
+    // 8. Arched Bridges Crossing River
     const createBridge = (xPos: number) => {
       const bridgeGroup = new THREE.Group();
-      // Main bridge road deck (Wide 18m deck)
       const deckGeo = new THREE.BoxGeometry(18, 2.4, 42);
       const deckMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.4, roughness: 0.5 });
       const deck = new THREE.Mesh(deckGeo, deckMat);
       deck.position.y = 2.4;
       bridgeGroup.add(deck);
 
-      // Glowing Center Yellow Striping
       const stripeGeo = new THREE.PlaneGeometry(1.2, 40);
       const stripeMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b });
       const stripe = new THREE.Mesh(stripeGeo, stripeMat);
@@ -266,7 +262,6 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
       stripe.position.y = 3.65;
       bridgeGroup.add(stripe);
 
-      // Pedestrian Sidewalks on bridge sides
       const walkMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.6 });
       const walkL = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.4, 40), walkMat);
       walkL.position.set(-7.5, 3.8, 0);
@@ -275,7 +270,6 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
       walkR.position.set(7.5, 3.8, 0);
       bridgeGroup.add(walkR);
 
-      // Warning lights
       const lightLeft = new THREE.PointLight(0x38bdf8, 2, 25);
       lightLeft.position.set(-9, 5, 0);
       bridgeGroup.add(lightLeft);
@@ -289,15 +283,13 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
     scene.add(createBridge(-55));
     scene.add(createBridge(55));
 
-    // 9. Wide Arterial Boulevards (Making Space Free & Legible)
+    // 9. Boulevards & Roads
     const roadMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.8 });
-    // North-South Central Grand Boulevard (28m wide)
     const grandAve = new THREE.Mesh(new THREE.PlaneGeometry(28, 380), roadMat);
     grandAve.rotation.x = -Math.PI / 2;
     grandAve.position.set(0, 0.1, 0);
     scene.add(grandAve);
 
-    // East-West Arterial Avenues (20m wide)
     const northAve = new THREE.Mesh(new THREE.PlaneGeometry(380, 20), roadMat);
     northAve.rotation.x = -Math.PI / 2;
     northAve.position.set(0, 0.1, -75);
@@ -308,111 +300,93 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
     southAve.position.set(0, 0.1, 75);
     scene.add(southAve);
 
-    // Open Green Evacuation Parks & Assembly Squares (Giving Breathing Room)
-    const parkMat = new THREE.MeshStandardMaterial({ color: 0x064e3b, roughness: 0.9 });
-    const parkNorth = new THREE.Mesh(new THREE.PlaneGeometry(45, 45), parkMat);
-    parkNorth.rotation.x = -Math.PI / 2;
-    parkNorth.position.set(65, 0.12, -75);
-    scene.add(parkNorth);
+    // 10. HELPER FUNCTION: High-Resolution 3D Floating Tactical HUD Billboard
+    const createTacticalBillboard = (
+      badgeText: string,
+      title: string,
+      subtext: string,
+      borderColor: string,
+      badgeColor: string,
+      width = 300,
+      height = 92
+    ) => {
+      const canvas = document.createElement('canvas');
+      canvas.width = width * 2;
+      canvas.height = height * 2;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.scale(2, 2);
 
-    const parkSouth = new THREE.Mesh(new THREE.PlaneGeometry(45, 45), parkMat);
-    parkSouth.rotation.x = -Math.PI / 2;
-    parkSouth.position.set(-65, 0.12, 75);
-    scene.add(parkSouth);
+        // Dark frosted tactical background
+        ctx.fillStyle = 'rgba(7, 14, 28, 0.94)';
+        ctx.beginPath();
+        ctx.roundRect(4, 4, width - 8, height - 8, 12);
+        ctx.fill();
 
-    // 10. Architectural Building Color Palette (Vivid, Recognizable & Distinct)
+        // Glowing border
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = borderColor;
+        ctx.stroke();
+
+        // Top Status Pill
+        ctx.fillStyle = badgeColor;
+        ctx.beginPath();
+        ctx.roundRect(14, 12, 130, 20, 6);
+        ctx.fill();
+
+        ctx.font = 'bold 10px monospace';
+        ctx.fillStyle = '#020617';
+        ctx.fillText(badgeText, 22, 26);
+
+        // Title
+        ctx.font = 'bold 13px sans-serif';
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText(title, 14, 52);
+
+        // Subtext / Telemetry
+        ctx.font = '10px monospace';
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillText(subtext, 14, 72);
+      }
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.minFilter = THREE.LinearFilter;
+      const mat = new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false });
+      const sprite = new THREE.Sprite(mat);
+      sprite.scale.set(width * 0.08, height * 0.08, 1);
+      return sprite;
+    };
+
+    // 11. Architectural Building Color Palette
     const buildingPalette = [
-      // 0. Modern Cobalt Sky High-Rise
-      new THREE.MeshStandardMaterial({
-        color: 0x2563eb,
-        map: windowTexture,
-        roughness: 0.25,
-        metalness: 0.65
-      }),
-      // 1. Slate Modern Steel
-      new THREE.MeshStandardMaterial({
-        color: 0x475569,
-        map: windowTexture,
-        roughness: 0.35,
-        metalness: 0.55
-      }),
-      // 2. High-Tech Cyan Glass Tower
-      new THREE.MeshStandardMaterial({
-        color: 0x0284c7,
-        map: windowTexture,
-        roughness: 0.2,
-        metalness: 0.75
-      }),
-      // 3. Warm Ochre Sandstone
-      new THREE.MeshStandardMaterial({
-        color: 0xd97706,
-        map: windowTexture,
-        roughness: 0.6,
-        metalness: 0.15
-      }),
-      // 4. Vibrant Terracotta Residential
-      new THREE.MeshStandardMaterial({
-        color: 0xc2410c,
-        map: windowTexture,
-        roughness: 0.65,
-        metalness: 0.15
-      }),
-      // 5. Clean Contemporary White / Platinum
-      new THREE.MeshStandardMaterial({
-        color: 0xe2e8f0,
-        map: windowTexture,
-        roughness: 0.35,
-        metalness: 0.3
-      }),
-      // 6. Deep Teal Modern Corporate
-      new THREE.MeshStandardMaterial({
-        color: 0x0f766e,
-        map: windowTexture,
-        roughness: 0.25,
-        metalness: 0.6
-      }),
-      // 7. Rich Amber Gold Tower
-      new THREE.MeshStandardMaterial({
-        color: 0xb45309,
-        map: windowTexture,
-        roughness: 0.45,
-        metalness: 0.4
-      })
+      new THREE.MeshStandardMaterial({ color: 0x2563eb, map: windowTexture, roughness: 0.25, metalness: 0.65 }),
+      new THREE.MeshStandardMaterial({ color: 0x475569, map: windowTexture, roughness: 0.35, metalness: 0.55 }),
+      new THREE.MeshStandardMaterial({ color: 0x0284c7, map: windowTexture, roughness: 0.2, metalness: 0.75 }),
+      new THREE.MeshStandardMaterial({ color: 0xd97706, map: windowTexture, roughness: 0.6, metalness: 0.15 }),
+      new THREE.MeshStandardMaterial({ color: 0xc2410c, map: windowTexture, roughness: 0.65, metalness: 0.15 }),
+      new THREE.MeshStandardMaterial({ color: 0xe2e8f0, map: windowTexture, roughness: 0.35, metalness: 0.3 }),
+      new THREE.MeshStandardMaterial({ color: 0x0f766e, map: windowTexture, roughness: 0.25, metalness: 0.6 }),
+      new THREE.MeshStandardMaterial({ color: 0xb45309, map: windowTexture, roughness: 0.45, metalness: 0.4 })
     ];
+    const roofMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.7, metalness: 0.4 });
 
-    const roofMat = new THREE.MeshStandardMaterial({
-      color: 0x1e293b,
-      roughness: 0.7,
-      metalness: 0.4
-    });
-
-    // 11. Spacious, Uncongested Building Layout (Generous 25m+ Open Space Between Structures)
+    // Spacious Building Grid
     const buildingGroup = new THREE.Group();
     animatedHumansRef.current = [];
 
-    // Distinct Building Plots:
-    // Placed with wide street gaps, large plazas, and clear views
     const buildingConfigs = [
-      // North Sector (Skyscrapers & Commercial District) - z between -40 and -115
       { x: -110, z: -105, w: 18, d: 18, h: 65, matIdx: 0, name: 'North Tower Alpha' },
       { x: -75,  z: -110, w: 22, d: 20, h: 80, matIdx: 2, name: 'Apex Glass High-Rise' },
       { x: -35,  z: -110, w: 18, d: 18, h: 55, matIdx: 1, name: 'North Steel Plaza' },
       { x: 35,   z: -110, w: 20, d: 18, h: 72, matIdx: 6, name: 'Teal Meridian Tower' },
       { x: 105,  z: -105, w: 22, d: 20, h: 60, matIdx: 3, name: 'Ochre Financial Center' },
-      
-      // North Mid-Row (Spaced out, along North Avenue)
       { x: -110, z: -55,  w: 18, d: 16, h: 48, matIdx: 4, name: 'North Terrace' },
-      { x: -15,  z: -42,  w: 24, d: 22, h: 42, matIdx: 5, name: 'Command Complex Rooftop (Victim)' }, // PRIMARY ROOFTOP VICTIM
+      { x: -15,  z: -42,  w: 24, d: 22, h: 42, matIdx: 5, name: 'Command Complex (Victim Rooftop)' },
       { x: 35,   z: -50,  w: 18, d: 18, h: 58, matIdx: 0, name: 'Harbor Tower' },
       { x: 105,  z: -55,  w: 20, d: 18, h: 52, matIdx: 7, name: 'Amber Center' },
-
-      // South Sector (Residential & Civic Quarter) - z between 40 and 115
       { x: -110, z: 55,   w: 20, d: 18, h: 45, matIdx: 3, name: 'West Residential A' },
       { x: -15,  z: 50,   w: 18, d: 16, h: 40, matIdx: 4, name: 'Riverside Suites' },
       { x: 35,   z: 50,   w: 22, d: 20, h: 55, matIdx: 1, name: 'Metro Civic Tower' },
       { x: 110,  z: 55,   w: 20, d: 18, h: 46, matIdx: 0, name: 'East Skyline Suites' },
-
-      // South Far-Row (Spaced out, along South Avenue)
       { x: -110, z: 105,  w: 18, d: 18, h: 50, matIdx: 6, name: 'South Marina' },
       { x: -35,  z: 110,  w: 20, d: 18, h: 62, matIdx: 2, name: 'Oceanic Glass Tower' },
       { x: 35,   z: 110,  w: 18, d: 18, h: 54, matIdx: 5, name: 'Pearl White Tower' },
@@ -429,24 +403,11 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
       bldg.name = cfg.name;
       buildingGroup.add(bldg);
 
-      // Distinct Rooftop Slab with Rim
       const roofGeo = new THREE.BoxGeometry(cfg.w * 0.95, 1.4, cfg.d * 0.95);
       const roof = new THREE.Mesh(roofGeo, roofMat);
       roof.position.set(cfg.x, cfg.h + 0.7, cfg.z);
       buildingGroup.add(roof);
 
-      // Helipads on selected tall towers
-      if (cfg.h > 55) {
-        const helipad = new THREE.Mesh(
-          new THREE.RingGeometry(cfg.w * 0.2, cfg.w * 0.35, 24),
-          new THREE.MeshBasicMaterial({ color: 0xfbbf24, side: THREE.DoubleSide })
-        );
-        helipad.rotation.x = -Math.PI / 2;
-        helipad.position.set(cfg.x, cfg.h + 1.45, cfg.z);
-        buildingGroup.add(helipad);
-      }
-
-      // Rooftop Antennas / Warning Lights
       if (cfg.h >= 60 || idx === 1) {
         const antGeo = new THREE.CylinderGeometry(0.25, 0.45, 10, 8);
         const antMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
@@ -464,7 +425,6 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
     // 12. HELPER FUNCTION: High-Visibility Stylized 3D Human Characters
     const createHumanFigure = (jacketColor: number, pantsColor = 0x1e293b, scale = 1.0, isWaving = false, isSitting = false) => {
       const g = new THREE.Group();
-      // Head
       const head = new THREE.Mesh(
         new THREE.SphereGeometry(0.35 * scale, 8, 8),
         new THREE.MeshStandardMaterial({ color: 0xffdbac, roughness: 0.5 })
@@ -472,7 +432,6 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
       head.position.y = (isSitting ? 1.1 : 1.6) * scale;
       g.add(head);
 
-      // Torso / Jacket
       const torso = new THREE.Mesh(
         new THREE.BoxGeometry(0.6 * scale, 0.8 * scale, 0.35 * scale),
         new THREE.MeshStandardMaterial({ color: jacketColor, roughness: 0.4 })
@@ -480,10 +439,8 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
       torso.position.y = (isSitting ? 0.6 : 1.0) * scale;
       g.add(torso);
 
-      // Legs
       const legMat = new THREE.MeshStandardMaterial({ color: pantsColor, roughness: 0.7 });
       if (isSitting) {
-        // Sitting forward bent legs
         const leftLeg = new THREE.Mesh(new THREE.BoxGeometry(0.2 * scale, 0.2 * scale, 0.6 * scale), legMat);
         leftLeg.position.set(-0.16 * scale, 0.2 * scale, 0.25 * scale);
         g.add(leftLeg);
@@ -499,7 +456,6 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
         g.add(rightLeg);
       }
 
-      // Arms (with animated arm tracking)
       const armMat = new THREE.MeshStandardMaterial({ color: jacketColor, roughness: 0.4 });
       const leftArm = new THREE.Mesh(new THREE.BoxGeometry(0.16 * scale, 0.65 * scale, 0.16 * scale), armMat);
       const rightArm = new THREE.Mesh(new THREE.BoxGeometry(0.16 * scale, 0.65 * scale, 0.16 * scale), armMat);
@@ -526,137 +482,343 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
       return g;
     };
 
-    // 13. KEY OPERATIONAL FACILITIES (Spacious & Visible)
-
-    // A. GOVERNMENT GENERAL HOSPITAL (Clean White & Medical Cross)
-    const hospGroup = new THREE.Group();
-    const hospBldg = new THREE.Mesh(
-      new THREE.BoxGeometry(32, 22, 30),
-      new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.3, metalness: 0.2 })
-    );
-    hospBldg.position.y = 11;
-    hospGroup.add(hospBldg);
-
-    // Illuminated Medical Red/Green Cross
-    const crossMat = new THREE.MeshBasicMaterial({ color: 0x10b981 });
-    const crossV = new THREE.Mesh(new THREE.BoxGeometry(2, 8, 0.5), crossMat);
-    crossV.position.set(0, 16, 15.3);
-    hospGroup.add(crossV);
-    const crossH = new THREE.Mesh(new THREE.BoxGeometry(8, 2, 0.5), crossMat);
-    crossH.position.set(0, 16, 15.3);
-    hospGroup.add(crossH);
-
-    // Hospital Beacon Light
-    const hospBeacon = new THREE.PointLight(0x10b981, 3, 50);
-    hospBeacon.position.set(0, 26, 0);
-    hospGroup.add(hospBeacon);
-
-    // Ambulance Canopy & Helipad
-    const bayRoof = new THREE.Mesh(
-      new THREE.BoxGeometry(20, 1.2, 14),
-      new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.5 })
-    );
-    bayRoof.position.set(0, 5, 20);
-    hospGroup.add(bayRoof);
-
-    // Hospital Medical Humans (7 Staff & Stretcher Team)
-    const docLead = createHumanFigure(0xf8fafc, 0x0284c7, 1.1, false); // Doctor in white
-    docLead.position.set(-4, 0, 20);
-    hospGroup.add(docLead);
-
-    const medic1 = createHumanFigure(0x0284c7, 0x1e293b, 1.1, false); // Paramedic
-    medic1.position.set(4, 0, 20);
-    hospGroup.add(medic1);
-
-    const medic2 = createHumanFigure(0x0284c7, 0x1e293b, 1.1, false);
-    medic2.position.set(8, 0, 18);
-    hospGroup.add(medic2);
-
-    // Stretcher Team carrying patient
-    const stretcherCarrier1 = createHumanFigure(0x38bdf8, 0x1e293b, 1.0, false);
-    stretcherCarrier1.position.set(-8, 0, 21);
-    hospGroup.add(stretcherCarrier1);
-
-    const stretcherCarrier2 = createHumanFigure(0x38bdf8, 0x1e293b, 1.0, false);
-    stretcherCarrier2.position.set(-8, 0, 25);
-    hospGroup.add(stretcherCarrier2);
-
-    // Stretcher bed
-    const stretcher = new THREE.Mesh(
-      new THREE.BoxGeometry(1.2, 0.3, 3.2),
-      new THREE.MeshStandardMaterial({ color: 0x94a3b8 })
-    );
-    stretcher.position.set(-8, 0.8, 23);
-    hospGroup.add(stretcher);
-
-    hospGroup.position.set(-75, 0, -55);
-    scene.add(hospGroup);
-
-    // B. VYRO SAFE SHELTER 01 (Vivid Foliage Green Complex)
+    // 13. STRUCTURED HUMANITARIAN RELIEF COMPOUND: SAFE SHELTER 01
     const shelterGroup = new THREE.Group();
-    const shelterBldg = new THREE.Mesh(
-      new THREE.BoxGeometry(36, 16, 28),
-      new THREE.MeshStandardMaterial({ color: 0x15803d, metalness: 0.2, roughness: 0.5 })
-    );
-    shelterBldg.position.y = 8;
-    shelterGroup.add(shelterBldg);
 
-    // Green Glowing Perimeter Fence Ring
-    const shelterRing = new THREE.Mesh(
-      new THREE.RingGeometry(26, 28, 32),
-      new THREE.MeshBasicMaterial({ color: 0x10b981, side: THREE.DoubleSide, transparent: true, opacity: 0.85 })
+    // A. Clean Compound Paved Foundation Deck (84m x 64m)
+    const compoundDeck = new THREE.Mesh(
+      new THREE.BoxGeometry(84, 0.8, 64),
+      new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.8 })
     );
-    shelterRing.rotation.x = -Math.PI / 2;
-    shelterRing.position.y = 0.2;
-    shelterGroup.add(shelterRing);
+    compoundDeck.position.y = 0.4;
+    compoundDeck.receiveShadow = true;
+    shelterGroup.add(compoundDeck);
 
-    // Green Shelter Beacon
-    const shelterBeacon = new THREE.PointLight(0x10b981, 3.5, 60);
-    shelterBeacon.position.set(0, 20, 0);
+    // Orderly Paved Walkways connecting all zones
+    const walkNorthSouth = new THREE.Mesh(new THREE.PlaneGeometry(6, 60), new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.6 }));
+    walkNorthSouth.rotation.x = -Math.PI / 2;
+    walkNorthSouth.position.set(0, 0.82, 0);
+    shelterGroup.add(walkNorthSouth);
+
+    const walkEastWest = new THREE.Mesh(new THREE.PlaneGeometry(80, 6), new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.6 }));
+    walkEastWest.rotation.x = -Math.PI / 2;
+    walkEastWest.position.set(0, 0.82, 0);
+    shelterGroup.add(walkEastWest);
+
+    // B. Main Administration & Intake Hall (Rear Center)
+    const mainBldg = new THREE.Mesh(
+      new THREE.BoxGeometry(40, 14, 20),
+      new THREE.MeshStandardMaterial({ color: 0x15803d, metalness: 0.3, roughness: 0.4 })
+    );
+    mainBldg.position.set(0, 7.8, -18);
+    shelterGroup.add(mainBldg);
+
+    // Covered Glass Intake Canopy
+    const portico = new THREE.Mesh(
+      new THREE.BoxGeometry(22, 1.2, 8),
+      new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.4 })
+    );
+    portico.position.set(0, 5.5, -5);
+    shelterGroup.add(portico);
+
+    // Intake Desks with Digital Check-in
+    const regDesk = new THREE.Mesh(new THREE.BoxGeometry(12, 1.1, 2.2), new THREE.MeshStandardMaterial({ color: 0x0284c7 }));
+    regDesk.position.set(0, 1.2, -5);
+    shelterGroup.add(regDesk);
+
+    // C. Four Structured Humanitarian Quonset/Relief Tents (Bays 01-04)
+    const tentOffsets = [
+      { x: -24, z: -10, name: 'BAY 01 • FAMILIES' },
+      { x: -24, z: 12,  name: 'BAY 02 • GENERAL' },
+      { x: 24,  z: -10, name: 'BAY 03 • MEDICAL' },
+      { x: 24,  z: 12,  name: 'BAY 04 • SUPPLIES' }
+    ];
+
+    tentOffsets.forEach(pos => {
+      const tentG = new THREE.Group();
+      const tentBody = new THREE.Mesh(
+        new THREE.BoxGeometry(14, 5, 10),
+        new THREE.MeshStandardMaterial({ color: 0xf1f5f9, roughness: 0.5 })
+      );
+      tentBody.position.y = 2.5;
+      tentG.add(tentBody);
+
+      const roofRidge = new THREE.Mesh(
+        new THREE.ConeGeometry(7, 3, 4),
+        new THREE.MeshStandardMaterial({ color: 0x16a34a, roughness: 0.6 })
+      );
+      roofRidge.rotation.y = Math.PI / 4;
+      roofRidge.position.y = 6.2;
+      roofRidge.scale.set(1.4, 1, 1);
+      tentG.add(roofRidge);
+
+      const stripe = new THREE.Mesh(
+        new THREE.BoxGeometry(14.2, 0.6, 0.2),
+        new THREE.MeshBasicMaterial({ color: 0x10b981 })
+      );
+      stripe.position.set(0, 4.2, 5.1);
+      tentG.add(stripe);
+
+      tentG.position.set(pos.x, 0.8, pos.z);
+      shelterGroup.add(tentG);
+    });
+
+    // D. Food & Water Distribution Station (Center Front)
+    const distCounter = new THREE.Mesh(
+      new THREE.BoxGeometry(10, 1.2, 3),
+      new THREE.MeshStandardMaterial({ color: 0x0284c7 })
+    );
+    distCounter.position.set(0, 1.3, 16);
+    shelterGroup.add(distCounter);
+
+    for (let b = 0; b < 4; b++) {
+      const barrel = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.6, 0.6, 1.6, 12),
+        new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.3 })
+      );
+      barrel.position.set(-4.5 + b * 1.5, 1.5, 16);
+      shelterGroup.add(barrel);
+    }
+
+    // E. Orderly Registration Queue & Relief Workers
+    const intakeStaff = createHumanFigure(0x10b981, 0x1e293b, 1.1, false);
+    intakeStaff.position.set(0, 0.8, -3.5);
+    shelterGroup.add(intakeStaff);
+
+    const queue1 = createHumanFigure(0xfbbf24, 0x334155, 1.05, false);
+    queue1.position.set(0, 0.8, -1.0);
+    shelterGroup.add(queue1);
+
+    const queue2 = createHumanFigure(0x94a3b8, 0x1e293b, 1.0, false);
+    queue2.position.set(0, 0.8, 1.5);
+    shelterGroup.add(queue2);
+
+    const supplyStaff = createHumanFigure(0x0284c7, 0x1e293b, 1.1, false);
+    supplyStaff.position.set(0, 0.8, 18);
+    shelterGroup.add(supplyStaff);
+
+    const supplyCitizen = createHumanFigure(0xf472b6, 0x334155, 1.0, false);
+    supplyCitizen.position.set(0, 0.8, 13.5);
+    shelterGroup.add(supplyCitizen);
+
+    // Seated Rest Area (Resting Benches with Evacuees)
+    const benchMat = new THREE.MeshStandardMaterial({ color: 0x475569 });
+    const bench1 = new THREE.Mesh(new THREE.BoxGeometry(6, 0.6, 1.4), benchMat);
+    bench1.position.set(-10, 1.1, 8);
+    shelterGroup.add(bench1);
+
+    const seatedEvac1 = createHumanFigure(0xfbbf24, 0x334155, 1.0, false, true);
+    seatedEvac1.position.set(-11, 0.8, 8);
+    shelterGroup.add(seatedEvac1);
+
+    const seatedEvac2 = createHumanFigure(0x38bdf8, 0x1e293b, 1.0, false, true);
+    seatedEvac2.position.set(-9, 0.8, 8);
+    shelterGroup.add(seatedEvac2);
+
+    // F. Perimeter Floodlights & Center Green Beacon
+    for (let c = 0; c < 4; c++) {
+      const xSign = c % 2 === 0 ? 1 : -1;
+      const zSign = c < 2 ? 1 : -1;
+      const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 8, 8), new THREE.MeshStandardMaterial({ color: 0x334155 }));
+      pole.position.set(xSign * 39, 4.8, zSign * 29);
+      shelterGroup.add(pole);
+
+      const flood = new THREE.PointLight(0x10b981, 1.8, 25);
+      flood.position.set(xSign * 39, 8.5, zSign * 29);
+      shelterGroup.add(flood);
+    }
+
+    const shelterBeacon = new THREE.PointLight(0x10b981, 3.5, 65);
+    shelterBeacon.position.set(0, 24, 0);
     shelterGroup.add(shelterBeacon);
 
-    // Relief Tents around shelter
-    const createTent = (xPos: number, zPos: number) => {
-      const coneGeo = new THREE.ConeGeometry(3.5, 3.2, 4);
-      const coneMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.4 });
-      const tent = new THREE.Mesh(coneGeo, coneMat);
-      tent.rotation.y = Math.PI / 4;
-      tent.position.set(xPos, 1.6, zPos);
-      return tent;
-    };
-    shelterGroup.add(createTent(-18, 18));
-    shelterGroup.add(createTent(18, 18));
-
-    // Shelter Volunteers & Evacuee Humans (8 Humans)
-    const shelterCoord = createHumanFigure(0x10b981, 0x1e293b, 1.1, false);
-    shelterCoord.position.set(0, 0, 18);
-    shelterGroup.add(shelterCoord);
-
-    const shelterMed = createHumanFigure(0x38bdf8, 0x1e293b, 1.0, false);
-    shelterMed.position.set(-4, 0, 18);
-    shelterGroup.add(shelterMed);
-
-    // Evacuees sitting and resting
-    const evac1 = createHumanFigure(0xfbbf24, 0x334155, 1.0, false, true);
-    evac1.position.set(-16, 0, 18);
-    shelterGroup.add(evac1);
-
-    const evac2 = createHumanFigure(0xf43f5e, 0x334155, 1.0, false, true);
-    evac2.position.set(-14, 0, 18);
-    shelterGroup.add(evac2);
-
-    const evac3 = createHumanFigure(0x60a5fa, 0x1e293b, 1.0, false);
-    evac3.position.set(14, 0, 18);
-    shelterGroup.add(evac3);
-
-    const evacChild = createHumanFigure(0xfde047, 0x1e293b, 0.7, true);
-    evacChild.position.set(16, 0, 18);
-    shelterGroup.add(evacChild);
+    // G. Overhead Tactical Floating HUD Billboard for Safe Shelter 01
+    const shelterHUD = createTacticalBillboard(
+      '🛡️ SHELTER ACTIVE',
+      'VYRO SAFE SHELTER 01',
+      'CAPACITY: 250 • OCCUPIED: 157 (93 AVAIL)',
+      '#10b981',
+      '#10b981',
+      320,
+      95
+    );
+    shelterHUD.position.set(0, 28, 0);
+    shelterGroup.add(shelterHUD);
 
     shelterGroup.position.set(75, 0, 55);
     scene.add(shelterGroup);
 
-    // C. FAMILY REUNIFICATION CENTER RC-02 (Royal Purple with Pulsing Emerald Ready Beacon)
+    // 14. STRUCTURED ROOFTOP SURVIVOR REFUGE PAD (CRITICAL SOS CASE VY-26-1042)
+    const victimGroup = new THREE.Group();
+    const victimPos = new THREE.Vector3(-15, 42, -42);
+
+    // A. Yellow/Black Hazard Border Chevrons on Roof Deck (18m x 18m)
+    const refugePadGeo = new THREE.PlaneGeometry(18, 18);
+    const refugePadMat = new THREE.MeshStandardMaterial({
+      color: 0x1e293b,
+      roughness: 0.7
+    });
+    const refugePad = new THREE.Mesh(refugePadGeo, refugePadMat);
+    refugePad.rotation.x = -Math.PI / 2;
+    refugePad.position.copy(victimPos);
+    refugePad.position.y += 0.75;
+    victimGroup.add(refugePad);
+
+    // Emergency Rescue Orange Tarpaulin (12m x 12m)
+    const tarpGeo = new THREE.PlaneGeometry(12, 12);
+    const tarpMat = new THREE.MeshBasicMaterial({ color: 0xea580c });
+    const tarp = new THREE.Mesh(tarpGeo, tarpMat);
+    tarp.rotation.x = -Math.PI / 2;
+    tarp.position.copy(victimPos);
+    tarp.position.y += 0.78;
+    victimGroup.add(tarp);
+
+    // B. High-Intensity Vertical Locator Light Beam (180m Cylindrical Beam)
+    const beamGeo = new THREE.CylinderGeometry(0.5, 0.5, 180, 16);
+    const beamMat = new THREE.MeshBasicMaterial({
+      color: 0xef4444,
+      transparent: true,
+      opacity: 0.65,
+      side: THREE.DoubleSide
+    });
+    const beam = new THREE.Mesh(beamGeo, beamMat);
+    beam.position.copy(victimPos);
+    beam.position.y += 90;
+    victimGroup.add(beam);
+    primaryVictimBeamRef.current = beam;
+
+    // Pulsing Circular Ground Glow Ring
+    const ringGeo = new THREE.RingGeometry(3, 5, 32);
+    const ringMat = new THREE.MeshBasicMaterial({ color: 0xef4444, side: THREE.DoubleSide, transparent: true, opacity: 0.9 });
+    const ring = new THREE.Mesh(ringGeo, ringMat);
+    ring.rotation.x = -Math.PI / 2;
+    ring.position.copy(victimPos);
+    ring.position.y += 0.82;
+    victimGroup.add(ring);
+    primaryVictimRingRef.current = ring;
+
+    // Glowing Point Light
+    const victimLight = new THREE.PointLight(0xef4444, 4, 45);
+    victimLight.position.copy(victimPos);
+    victimLight.position.y += 3;
+    victimGroup.add(victimLight);
+    primaryVictimLightRef.current = victimLight;
+
+    // C. Structured Survivor Arrangement on Refuge Pad:
+    // 1. Lookout waving emergency flare at edge
+    const lookout = createHumanFigure(0xf97316, 0x1e293b, 1.2, true);
+    lookout.position.set(victimPos.x - 3.5, victimPos.y + 0.8, victimPos.z + 2.5);
+    victimGroup.add(lookout);
+
+    // Glowing flare in lookout hand
+    const flare = new THREE.PointLight(0xef4444, 2.5, 15);
+    flare.position.set(victimPos.x - 3.8, victimPos.y + 2.2, victimPos.z + 2.5);
+    victimGroup.add(flare);
+
+    // 2. Mother / Guardian Standing Protectively
+    const guardian = createHumanFigure(0xa855f7, 0x1e293b, 1.1, false);
+    guardian.position.set(victimPos.x, victimPos.y + 0.8, victimPos.z - 1.5);
+    victimGroup.add(guardian);
+
+    // 3. Child Waving Joyfully (Ananya Sharma)
+    const child1 = createHumanFigure(0xfbbf24, 0x1e293b, 0.75, true);
+    child1.position.set(victimPos.x + 1.8, victimPos.y + 0.8, victimPos.z - 1.0);
+    victimGroup.add(child1);
+
+    // 4. Injured Survivor Seated on Thermal Foil Mat
+    const sittingVictim = createHumanFigure(0x38bdf8, 0x1e293b, 1.0, false, true);
+    sittingVictim.position.set(victimPos.x - 1.5, victimPos.y + 0.8, victimPos.z - 2.5);
+    victimGroup.add(sittingVictim);
+
+    // Emergency Survival Supply Crate
+    const supplyCrate = new THREE.Mesh(
+      new THREE.BoxGeometry(1.6, 1.0, 1.2),
+      new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.4 })
+    );
+    supplyCrate.position.set(victimPos.x + 2.8, victimPos.y + 1.3, victimPos.z - 2.5);
+    victimGroup.add(supplyCrate);
+
+    // D. Overhead Floating Tactical HUD Billboard for Critical Victims
+    const victimHUD = createTacticalBillboard(
+      '🆘 CRITICAL SOS • P1',
+      'CASE #VY-26-1042 (4 PAX)',
+      'WATER DEPTH +2.4m • ROOFTOP +42m • AIRLIFT READY',
+      '#ef4444',
+      '#ef4444',
+      320,
+      95
+    );
+    victimHUD.position.set(victimPos.x, victimPos.y + 9, victimPos.z);
+    victimGroup.add(victimHUD);
+
+    scene.add(victimGroup);
+    victimBeaconsRef.current.push({
+      id: 'VY-26-1042',
+      mesh: victimGroup,
+      light: victimLight,
+      basePos: victimPos
+    });
+
+    // 15. STRUCTURED CASUALTY STAGING POST (OLD BRIDGE SECTOR PIER 4)
+    const groundVictimsGroup = new THREE.Group();
+    const groundVictimsPos = new THREE.Vector3(-55, 1.2, -18);
+
+    // Safety Staging Deck along Embankment (20m x 8m)
+    const stagingDeck = new THREE.Mesh(
+      new THREE.BoxGeometry(20, 0.6, 8),
+      new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.7 })
+    );
+    stagingDeck.position.copy(groundVictimsPos);
+    groundVictimsGroup.add(stagingDeck);
+
+    // Amber perimeter pylons
+    for (let p = 0; p < 4; p++) {
+      const pylon = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.3, 0.4, 1.6, 8),
+        new THREE.MeshBasicMaterial({ color: 0xf59e0b })
+      );
+      pylon.position.set(groundVictimsPos.x - 8 + p * 5.3, groundVictimsPos.y + 0.9, groundVictimsPos.z + 3.2);
+      groundVictimsGroup.add(pylon);
+    }
+
+    // Seated survivors wrapped in thermal foil blankets
+    const benchG = new THREE.Mesh(new THREE.BoxGeometry(10, 0.5, 1.4), new THREE.MeshStandardMaterial({ color: 0x334155 }));
+    benchG.position.set(groundVictimsPos.x - 1, groundVictimsPos.y + 0.6, groundVictimsPos.z - 1);
+    groundVictimsGroup.add(benchG);
+
+    const surv1 = createHumanFigure(0xfbbf24, 0x1e293b, 1.0, false, true);
+    surv1.position.set(groundVictimsPos.x - 4, groundVictimsPos.y + 0.4, groundVictimsPos.z - 1);
+    groundVictimsGroup.add(surv1);
+
+    const surv2 = createHumanFigure(0xf472b6, 0x1e293b, 1.0, false, true);
+    surv2.position.set(groundVictimsPos.x - 1.5, groundVictimsPos.y + 0.4, groundVictimsPos.z - 1);
+    groundVictimsGroup.add(surv2);
+
+    const surv3 = createHumanFigure(0x38bdf8, 0x1e293b, 1.0, false, true);
+    surv3.position.set(groundVictimsPos.x + 1.5, groundVictimsPos.y + 0.4, groundVictimsPos.z - 1);
+    groundVictimsGroup.add(surv3);
+
+    // Standing lookout waving towards Zodiac boat
+    const survWaving = createHumanFigure(0xf97316, 0x1e293b, 1.1, true);
+    survWaving.position.set(groundVictimsPos.x + 5, groundVictimsPos.y + 0.4, groundVictimsPos.z + 1.5);
+    groundVictimsGroup.add(survWaving);
+
+    // Overhead Tactical Floating HUD Billboard for Pier Casualties
+    const pierHUD = createTacticalBillboard(
+      '📍 CASUALTY STAGING B',
+      'OLD BRIDGE PIER 4 (6 PAX)',
+      'CURRENT: HIGH • ZODIAC Z-02 INCOMING (ETA 8m)',
+      '#f59e0b',
+      '#f59e0b',
+      300,
+      95
+    );
+    pierHUD.position.set(groundVictimsPos.x, groundVictimsPos.y + 7, groundVictimsPos.z);
+    groundVictimsGroup.add(pierHUD);
+
+    scene.add(groundVictimsGroup);
+
+    // 16. FAMILY REUNIFICATION CENTER RC-02
     const familyGroup = new THREE.Group();
     const familyPavilion = new THREE.Mesh(
       new THREE.BoxGeometry(26, 12, 26),
@@ -665,7 +827,6 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
     familyPavilion.position.y = 6;
     familyGroup.add(familyPavilion);
 
-    // Glowing Canopy Roof
     const canopyRoof = new THREE.Mesh(
       new THREE.BoxGeometry(30, 1.2, 30),
       new THREE.MeshStandardMaterial({ color: 0xa855f7, roughness: 0.3 })
@@ -673,20 +834,15 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
     canopyRoof.position.y = 12.6;
     familyGroup.add(canopyRoof);
 
-    // Verification Desk Station
-    const deskGeo = new THREE.BoxGeometry(8, 1.2, 2);
-    const deskMat = new THREE.MeshStandardMaterial({ color: 0x1e293b });
-    const desk = new THREE.Mesh(deskGeo, deskMat);
+    const desk = new THREE.Mesh(new THREE.BoxGeometry(8, 1.2, 2), new THREE.MeshStandardMaterial({ color: 0x1e293b }));
     desk.position.set(0, 0.6, 17);
     familyGroup.add(desk);
 
-    // Pulsing Emerald Green Ready Beacon (Signifies Match Found & Ready for Safe Handoff)
     const famBeacon = new THREE.PointLight(0x10b981, 4.0, 55);
     famBeacon.position.set(0, 18, 0);
     familyGroup.add(famBeacon);
     familyReunionBeaconRef.current = famBeacon;
 
-    // Glowing Tactical Ground Boundary
     const famRing = new THREE.Mesh(
       new THREE.RingGeometry(20, 22, 32),
       new THREE.MeshBasicMaterial({ color: 0xa855f7, side: THREE.DoubleSide, transparent: true, opacity: 0.85 })
@@ -695,8 +851,7 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
     famRing.position.y = 0.2;
     familyGroup.add(famRing);
 
-    // Family Center Humans (8 Humans: Officers, Guardians, Reunited Children)
-    // Intake & Verification Officers
+    // Family Center Humans
     const intakeOfficer = createHumanFigure(0x2563eb, 0x0f172a, 1.1, false);
     intakeOfficer.position.set(-2, 0, 18);
     familyGroup.add(intakeOfficer);
@@ -705,12 +860,6 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
     verifyOfficer.position.set(2, 0, 18);
     familyGroup.add(verifyOfficer);
 
-    // Security guard safeguarding entrance
-    const secGuard = createHumanFigure(0x0f172a, 0x0f172a, 1.15, false);
-    secGuard.position.set(-8, 0, 17);
-    familyGroup.add(secGuard);
-
-    // Reunited Family: Father, Mother, Joyfully Waving Child
     const famFather = createHumanFigure(0xa855f7, 0x1e293b, 1.1, false);
     famFather.position.set(5, 0, 15);
     familyGroup.add(famFather);
@@ -719,19 +868,84 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
     famMother.position.set(8, 0, 15);
     familyGroup.add(famMother);
 
-    const famChild = createHumanFigure(0xfde047, 0x1e293b, 0.72, true); // Child waving in joy
+    const famChild = createHumanFigure(0xfde047, 0x1e293b, 0.72, true);
     famChild.position.set(6.5, 0, 16);
     familyGroup.add(famChild);
 
-    // Waiting Family Relative in Queue
-    const waitingFam = createHumanFigure(0x10b981, 0x334155, 1.05, false, true);
-    waitingFam.position.set(-6, 0, 14);
-    familyGroup.add(waitingFam);
+    // Overhead Tactical Floating HUD Billboard for Family Center
+    const familyHUD = createTacticalBillboard(
+      '💖 VYRO REUNITE™',
+      'REUNIFICATION HUB RC-02',
+      'MATCH: 98% • VERIFICATION DESK OPEN (SAFE HANDOFF)',
+      '#a855f7',
+      '#a855f7',
+      320,
+      95
+    );
+    familyHUD.position.set(0, 21, 0);
+    familyGroup.add(familyHUD);
 
     familyGroup.position.set(-60, 0, 55);
     scene.add(familyGroup);
 
-    // D. VYRO COMMAND CENTER HEADQUARTERS (Graphite Tech with Cyan Radar Mast)
+    // 17. GOVERNMENT GENERAL HOSPITAL
+    const hospGroup = new THREE.Group();
+    const hospBldg = new THREE.Mesh(
+      new THREE.BoxGeometry(32, 22, 30),
+      new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.3, metalness: 0.2 })
+    );
+    hospBldg.position.y = 11;
+    hospGroup.add(hospBldg);
+
+    const crossMat = new THREE.MeshBasicMaterial({ color: 0x10b981 });
+    const crossV = new THREE.Mesh(new THREE.BoxGeometry(2, 8, 0.5), crossMat);
+    crossV.position.set(0, 16, 15.3);
+    hospGroup.add(crossV);
+    const crossH = new THREE.Mesh(new THREE.BoxGeometry(8, 2, 0.5), crossMat);
+    crossH.position.set(0, 16, 15.3);
+    hospGroup.add(crossH);
+
+    const hospBeacon = new THREE.PointLight(0x10b981, 3, 50);
+    hospBeacon.position.set(0, 26, 0);
+    hospGroup.add(hospBeacon);
+
+    const docLead = createHumanFigure(0xf8fafc, 0x0284c7, 1.1, false);
+    docLead.position.set(-4, 0, 20);
+    hospGroup.add(docLead);
+
+    const medic1 = createHumanFigure(0x0284c7, 0x1e293b, 1.1, false);
+    medic1.position.set(4, 0, 20);
+    hospGroup.add(medic1);
+
+    // Stretcher Team
+    const stretcherCarrier1 = createHumanFigure(0x38bdf8, 0x1e293b, 1.0, false);
+    stretcherCarrier1.position.set(-8, 0, 21);
+    hospGroup.add(stretcherCarrier1);
+
+    const stretcherCarrier2 = createHumanFigure(0x38bdf8, 0x1e293b, 1.0, false);
+    stretcherCarrier2.position.set(-8, 0, 25);
+    hospGroup.add(stretcherCarrier2);
+
+    const stretcher = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.3, 3.2), new THREE.MeshStandardMaterial({ color: 0x94a3b8 }));
+    stretcher.position.set(-8, 0.8, 23);
+    hospGroup.add(stretcher);
+
+    const hospHUD = createTacticalBillboard(
+      '🏥 GENERAL HOSPITAL',
+      'ER TRAUMA BAY 14A',
+      'CAPACITY: 48 BEDS • 6 CASUALTIES INTAKE READY',
+      '#10b981',
+      '#10b981',
+      310,
+      95
+    );
+    hospHUD.position.set(0, 29, 0);
+    hospGroup.add(hospHUD);
+
+    hospGroup.position.set(-75, 0, -55);
+    scene.add(hospGroup);
+
+    // 18. COMMAND CENTER HEADQUARTERS
     const cmdGroup = new THREE.Group();
     const cmdBldg = new THREE.Mesh(
       new THREE.BoxGeometry(26, 30, 26),
@@ -750,168 +964,55 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
     cmdGroup.position.set(55, 0, -55);
     scene.add(cmdGroup);
 
-    // 14. CRITICAL VICTIM BEACON & ROOFTOP SURVIVORS
-    const victimGroup = new THREE.Group();
-    const victimPos = new THREE.Vector3(-15, 42, -42); // Aligned precisely with rooftop
-
-    // Vertical locator light beam (180m high beam)
-    const beamGeo = new THREE.CylinderGeometry(0.5, 0.5, 180, 16);
-    const beamMat = new THREE.MeshBasicMaterial({
-      color: 0xef4444,
-      transparent: true,
-      opacity: 0.65,
-      side: THREE.DoubleSide
-    });
-    const beam = new THREE.Mesh(beamGeo, beamMat);
-    beam.position.copy(victimPos);
-    beam.position.y += 90;
-    victimGroup.add(beam);
-    primaryVictimBeamRef.current = beam;
-
-    // Pulsing circular ground glow ring
-    const ringGeo = new THREE.RingGeometry(3, 5, 32);
-    const ringMat = new THREE.MeshBasicMaterial({ color: 0xef4444, side: THREE.DoubleSide, transparent: true, opacity: 0.9 });
-    const ring = new THREE.Mesh(ringGeo, ringMat);
-    ring.rotation.x = -Math.PI / 2;
-    ring.position.copy(victimPos);
-    ring.position.y += 0.8;
-    victimGroup.add(ring);
-    primaryVictimRingRef.current = ring;
-
-    // Glowing point light
-    const victimLight = new THREE.PointLight(0xef4444, 4, 45);
-    victimLight.position.copy(victimPos);
-    victimLight.position.y += 3;
-    victimGroup.add(victimLight);
-    primaryVictimLightRef.current = victimLight;
-
-    // 3 Recognizable Stylized Human Victims Waving on Rooftop
-    const victimHuman1 = createHumanFigure(0xf97316, 0x1e293b, 1.2, true);
-    victimHuman1.position.set(victimPos.x - 2, victimPos.y + 0.7, victimPos.z);
-    victimGroup.add(victimHuman1);
-
-    const victimHuman2 = createHumanFigure(0xef4444, 0x1e293b, 1.15, true);
-    victimHuman2.position.set(victimPos.x + 2, victimPos.y + 0.7, victimPos.z);
-    victimGroup.add(victimHuman2);
-
-    const victimChild = createHumanFigure(0xfbbf24, 0x1e293b, 0.78, true);
-    victimChild.position.set(victimPos.x, victimPos.y + 0.7, victimPos.z + 1.8);
-    victimGroup.add(victimChild);
-
-    scene.add(victimGroup);
-    victimBeaconsRef.current.push({
-      id: 'VY-26-1042',
-      mesh: victimGroup,
-      light: victimLight,
-      basePos: victimPos
-    });
-
-    // 15. FIRST RESPONDERS & EVACUEES ON BOULEVARDS & BRIDGES (14 Additional Visible Humans)
-    // Search & Rescue Team along River Canal
-    const sarOfficer1 = createHumanFigure(0xf97316, 0x0f172a, 1.1, false);
-    sarOfficer1.position.set(-25, 0.8, -12);
-    scene.add(sarOfficer1);
-
-    const sarOfficer2 = createHumanFigure(0xf97316, 0x0f172a, 1.1, false);
-    sarOfficer2.position.set(-21, 0.8, -12);
-    scene.add(sarOfficer2);
-
-    // Police Cordon Officers at Bridge Entrance
-    const police1 = createHumanFigure(0x1e3a8a, 0x0f172a, 1.1, false);
-    police1.position.set(-50, 2.6, -18);
-    scene.add(police1);
-
-    const police2 = createHumanFigure(0x1e3a8a, 0x0f172a, 1.1, false);
-    police2.position.set(50, 2.6, 18);
-    scene.add(police2);
-
-    // Evacuees walking across Bridge Deck towards Shelter
-    const bridgeWalker1 = createHumanFigure(0x0284c7, 0x334155, 1.05, false);
-    bridgeWalker1.position.set(-52, 3.8, 4);
-    scene.add(bridgeWalker1);
-
-    const bridgeWalker2 = createHumanFigure(0xf43f5e, 0x334155, 1.0, false);
-    bridgeWalker2.position.set(-52, 3.8, -4);
-    scene.add(bridgeWalker2);
-
-    // Pedestrians on Central Grand Avenue
-    const ped1 = createHumanFigure(0x10b981, 0x1e293b, 1.05, false);
-    ped1.position.set(5, 0.2, 20);
-    scene.add(ped1);
-
-    const ped2 = createHumanFigure(0xfbbf24, 0x1e293b, 1.0, false);
-    ped2.position.set(-5, 0.2, -20);
-    scene.add(ped2);
-
-    // 16. MOVING RESCUE VEHICLES
-    // A. Rescue Truck R-07
+    // 19. MOVING RESCUE VEHICLES
+    // Rescue Truck R-07
     const truckGroup = new THREE.Group();
-    const truckBody = new THREE.Mesh(
-      new THREE.BoxGeometry(6, 2.4, 9.5),
-      new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.7, roughness: 0.3 })
-    );
+    const truckBody = new THREE.Mesh(new THREE.BoxGeometry(6, 2.4, 9.5), new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.7, roughness: 0.3 }));
     truckBody.position.y = 1.8;
     truckGroup.add(truckBody);
-    const truckCab = new THREE.Mesh(
-      new THREE.BoxGeometry(5.2, 2.0, 3.8),
-      new THREE.MeshStandardMaterial({ color: 0x0369a1, roughness: 0.2 })
-    );
+    const truckCab = new THREE.Mesh(new THREE.BoxGeometry(5.2, 2.0, 3.8), new THREE.MeshStandardMaterial({ color: 0x0369a1, roughness: 0.2 }));
     truckCab.position.set(0, 3.4, 2);
     truckGroup.add(truckCab);
     const truckLight = new THREE.PointLight(0x38bdf8, 2.5, 25);
     truckLight.position.set(0, 4.8, 0);
     truckGroup.add(truckLight);
-
     truckGroup.position.set(-25, 2.2, 0);
     scene.add(truckGroup);
     rescueTruckRef.current = truckGroup;
 
-    // B. Zodiac Raft Z-02 in river channel (with 2 crew figures)
+    // Zodiac Raft Z-02
     const boatGroup = new THREE.Group();
-    const boatHull = new THREE.Mesh(
-      new THREE.BoxGeometry(4.5, 1.5, 8),
-      new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.6, roughness: 0.3 })
-    );
+    const boatHull = new THREE.Mesh(new THREE.BoxGeometry(4.5, 1.5, 8), new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.6, roughness: 0.3 }));
     boatHull.position.y = 0.9;
     boatGroup.add(boatHull);
-
-    // Raft Crew
     const boatCrew1 = createHumanFigure(0xf97316, 0x1e293b, 0.95, false, true);
     boatCrew1.position.set(0, 0.7, 1.2);
     boatGroup.add(boatCrew1);
     const boatCrew2 = createHumanFigure(0xf97316, 0x1e293b, 0.95, false, true);
     boatCrew2.position.set(0, 0.7, -1.2);
     boatGroup.add(boatCrew2);
-
     const boatLight = new THREE.PointLight(0x38bdf8, 3, 30);
     boatLight.position.set(0, 2.8, 0);
     boatGroup.add(boatLight);
     boatGroup.position.set(35, 1.2, 2);
     scene.add(boatGroup);
 
-    // C. ALS Ambulance AMB-04
+    // Ambulance AMB-04
     const ambGroup = new THREE.Group();
-    const ambBody = new THREE.Mesh(
-      new THREE.BoxGeometry(4.8, 2.6, 8.5),
-      new THREE.MeshStandardMaterial({ color: 0xf8fafc, metalness: 0.4, roughness: 0.3 })
-    );
+    const ambBody = new THREE.Mesh(new THREE.BoxGeometry(4.8, 2.6, 8.5), new THREE.MeshStandardMaterial({ color: 0xf8fafc, metalness: 0.4, roughness: 0.3 }));
     ambBody.position.y = 2.0;
     ambGroup.add(ambBody);
-    const ambLightbar = new THREE.Mesh(
-      new THREE.BoxGeometry(3.8, 0.45, 0.9),
-      new THREE.MeshBasicMaterial({ color: 0xef4444 })
-    );
+    const ambLightbar = new THREE.Mesh(new THREE.BoxGeometry(3.8, 0.45, 0.9), new THREE.MeshBasicMaterial({ color: 0xef4444 }));
     ambLightbar.position.set(0, 3.5, 1);
     ambGroup.add(ambLightbar);
     const ambLight = new THREE.PointLight(0xef4444, 2.5, 25);
     ambLight.position.set(0, 3.8, 1);
     ambGroup.add(ambLight);
-
     ambGroup.position.set(-65, 2.0, -35);
     scene.add(ambGroup);
     ambulanceRef.current = ambGroup;
 
-    // D. Coast Guard Helo AIR-01
+    // Coast Guard Helo AIR-01
     const heloGroup = new THREE.Group();
     const heloBody = new THREE.Mesh(new THREE.BoxGeometry(3.8, 3.0, 9.5), new THREE.MeshStandardMaterial({ color: 0xe0f2fe, metalness: 0.7 }));
     heloGroup.add(heloBody);
@@ -926,53 +1027,39 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
     scene.add(heloGroup);
     helicopterRef.current = heloGroup;
 
-    // 17. Continuous 3D Rescue Chain Route (VICTIM -> VEHICLE -> HOSPITAL -> SHELTER -> FAMILY REUNION)
+    // 20. Continuous 3D Rescue Chain Route
     const routeCurve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(-15, 42, -42),  // Victim Rooftop
-      new THREE.Vector3(-15, 2.5, -12),  // Extraction Point at Old Bridge
-      new THREE.Vector3(0, 2.2, 0),      // Vehicle Transit Grand Avenue
-      new THREE.Vector3(-75, 2.5, -55),  // Hospital Bay
-      new THREE.Vector3(75, 2.5, 55),    // Shelter Perimeter
-      new THREE.Vector3(-60, 2.5, 55)    // Family Reunification Center RC-02
+      new THREE.Vector3(-15, 42, -42),
+      new THREE.Vector3(-15, 2.5, -12),
+      new THREE.Vector3(0, 2.2, 0),
+      new THREE.Vector3(-75, 2.5, -55),
+      new THREE.Vector3(75, 2.5, 55),
+      new THREE.Vector3(-60, 2.5, 55)
     ]);
     routeCurveRef.current = routeCurve;
 
     const routePoints = routeCurve.getPoints(120);
     const routeGeo = new THREE.BufferGeometry().setFromPoints(routePoints);
-    const routeMat = new THREE.LineBasicMaterial({
-      color: 0x38bdf8,
-      linewidth: 3,
-      transparent: true,
-      opacity: 0.95
-    });
+    const routeMat = new THREE.LineBasicMaterial({ color: 0x38bdf8, linewidth: 3, transparent: true, opacity: 0.95 });
     const routeLine = new THREE.Line(routeGeo, routeMat);
     scene.add(routeLine);
     activeRouteLineRef.current = routeLine;
     routeLineMatRef.current = routeMat;
 
-    // Glowing traveling energy pulse
     const pulseGeo = new THREE.SphereGeometry(2.0, 16, 16);
     const pulseMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
     const pulseMesh = new THREE.Mesh(pulseGeo, pulseMat);
     scene.add(pulseMesh);
     routePulseMeshRef.current = pulseMesh;
 
-    // 18. Disaster Atmospheric Effects
-    // Tsunami Wave
+    // 21. Disaster Effects
     const waveGeo = new THREE.BoxGeometry(380, 18, 32, 48, 8, 8);
-    const waveMat = new THREE.MeshStandardMaterial({
-      color: 0x0284c7,
-      roughness: 0.1,
-      metalness: 0.6,
-      transparent: true,
-      opacity: 0.82
-    });
+    const waveMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.1, metalness: 0.6, transparent: true, opacity: 0.82 });
     const tsunamiWave = new THREE.Mesh(waveGeo, waveMat);
     tsunamiWave.position.set(0, 8, -75);
     scene.add(tsunamiWave);
     tsunamiWaveMeshRef.current = tsunamiWave;
 
-    // Rain Particles (Cyclone)
     const rainCount = 1400;
     const rainGeo = new THREE.BufferGeometry();
     const rainPos = new Float32Array(rainCount * 3);
@@ -982,17 +1069,11 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
       rainPos[i * 3 + 2] = (Math.random() - 0.5) * 360;
     }
     rainGeo.setAttribute('position', new THREE.BufferAttribute(rainPos, 3));
-    const rainMat = new THREE.PointsMaterial({
-      color: 0x7dd3fc,
-      size: 0.65,
-      transparent: true,
-      opacity: 0.65
-    });
+    const rainMat = new THREE.PointsMaterial({ color: 0x7dd3fc, size: 0.65, transparent: true, opacity: 0.65 });
     const rainSystem = new THREE.Points(rainGeo, rainMat);
     scene.add(rainSystem);
     rainParticlesRef.current = rainSystem;
 
-    // Wildfire Smoke & Billboards
     const smokeCount = 350;
     const smokeGeo = new THREE.BufferGeometry();
     const smokePos = new Float32Array(smokeCount * 3);
@@ -1002,12 +1083,7 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
       smokePos[i * 3 + 2] = -50 + (Math.random() - 0.5) * 45;
     }
     smokeGeo.setAttribute('position', new THREE.BufferAttribute(smokePos, 3));
-    const smokeMat = new THREE.PointsMaterial({
-      color: 0x334155,
-      size: 4.5,
-      transparent: true,
-      opacity: 0.45
-    });
+    const smokeMat = new THREE.PointsMaterial({ color: 0x334155, size: 4.5, transparent: true, opacity: 0.45 });
     const smokeSystem = new THREE.Points(smokeGeo, smokeMat);
     scene.add(smokeSystem);
     smokeParticlesRef.current = smokeSystem;
@@ -1023,20 +1099,13 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
     scene.add(fireGroup);
     fireBillboardsRef.current = fireGroup;
 
-    // Chemical Vapor Cloud
     const gasGeo = new THREE.SphereGeometry(26, 24, 24);
-    const gasMat = new THREE.MeshStandardMaterial({
-      color: 0xa3e635,
-      transparent: true,
-      opacity: 0.35,
-      roughness: 0.9
-    });
+    const gasMat = new THREE.MeshStandardMaterial({ color: 0xa3e635, transparent: true, opacity: 0.35, roughness: 0.9 });
     const gasCloud = new THREE.Mesh(gasGeo, gasMat);
     gasCloud.position.set(-55, 18, 65);
     scene.add(gasCloud);
     gasCloudRef.current = gasCloud;
 
-    // Earthquake Debris Mounds
     const debrisGroup = new THREE.Group();
     for (let i = 0; i < 24; i++) {
       const debGeo = new THREE.BoxGeometry(2 + Math.random() * 3, 1.5 + Math.random() * 2, 2 + Math.random() * 3);
@@ -1049,7 +1118,6 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
     scene.add(debrisGroup);
     debrisGroupRef.current = debrisGroup;
 
-    // Resize handling
     const handleResize = () => {
       if (!container || !renderer || !camera) return;
       const w = container.clientWidth;
@@ -1060,7 +1128,7 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
     };
     window.addEventListener('resize', handleResize);
 
-    // 19. Animation & Render Loop
+    // 22. Animation Loop
     let clock = new THREE.Clock();
 
     const animate = () => {
@@ -1069,12 +1137,10 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
 
       controls.update();
 
-      // Animate Water ripples
       if (riverMat) {
         riverMat.opacity = 0.85 + Math.sin(elapsedTime * 2) * 0.08;
       }
 
-      // Animate Humans Waving Arms
       animatedHumansRef.current.forEach((h) => {
         if (h.isWaving && h.leftArm && h.rightArm) {
           const wave = Math.sin(elapsedTime * 6 + h.offset) * 0.45;
@@ -1083,12 +1149,10 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
         }
       });
 
-      // Animate Family Reunion Emerald Beacon Pulsing
       if (familyReunionBeaconRef.current) {
         familyReunionBeaconRef.current.intensity = 3.5 + Math.sin(elapsedTime * 4) * 1.5;
       }
 
-      // Animate Tsunami Wave
       if (tsunamiWaveMeshRef.current) {
         if (active3DDisaster === 'TSUNAMI') {
           tsunamiWaveMeshRef.current.visible = true;
@@ -1101,7 +1165,6 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
         }
       }
 
-      // Animate Flood Water Level
       if (waterMeshRef.current) {
         if (active3DDisaster === 'FLOOD') {
           waterMeshRef.current.position.y = 2.4 + Math.sin(elapsedTime * 0.8) * 0.4;
@@ -1114,7 +1177,6 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
         }
       }
 
-      // Animate Rain for Cyclone
       if (rainParticlesRef.current) {
         if (active3DDisaster === 'CYCLONE') {
           rainParticlesRef.current.visible = true;
@@ -1133,7 +1195,6 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
         }
       }
 
-      // Animate Smoke & Fire
       if (smokeParticlesRef.current && fireBillboardsRef.current) {
         if (active3DDisaster === 'WILDFIRE') {
           smokeParticlesRef.current.visible = true;
@@ -1154,7 +1215,6 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
         }
       }
 
-      // Animate Chemical Gas Cloud
       if (gasCloudRef.current) {
         if (active3DDisaster === 'CHEMICAL') {
           gasCloudRef.current.visible = true;
@@ -1166,19 +1226,16 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
         }
       }
 
-      // Debris visible for Earthquake
       if (debrisGroupRef.current) {
         debrisGroupRef.current.visible = active3DDisaster === 'EARTHQUAKE' || active3DDisaster === 'LANDSLIDE';
       }
 
-      // Animate Victim Pulsing Beacons
       victimBeaconsRef.current.forEach((vb) => {
         const pulse = 1 + Math.sin(elapsedTime * 4) * 0.35;
         vb.mesh.scale.set(pulse, pulse, pulse);
         vb.light.intensity = 3.0 + Math.sin(elapsedTime * 5) * 1.5;
       });
 
-      // Animate Helicopter
       if (heloRotorRef.current && helicopterRef.current) {
         heloRotorRef.current.rotation.y += 0.85;
         if (activeAiRescuePlan === 'B') {
@@ -1188,27 +1245,23 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
         }
       }
 
-      // Animate Rescue Truck
       if (rescueTruckRef.current) {
         const truckCycle = (elapsedTime * 0.15) % 1;
         rescueTruckRef.current.position.z = -25 + truckCycle * 50;
         rescueTruckRef.current.position.x = -25 + Math.sin(truckCycle * Math.PI) * 4;
       }
 
-      // Animate Ambulance
       if (ambulanceRef.current) {
         const ambCycle = (elapsedTime * 0.2) % 1;
         ambulanceRef.current.position.z = -55 + ambCycle * 40;
       }
 
-      // Animate Route Energy Pulse
       if (routePulseMeshRef.current && routeCurveRef.current) {
         const pulseProgress = (elapsedTime * 0.18) % 1;
         const pt = routeCurveRef.current.getPointAt(pulseProgress);
         routePulseMeshRef.current.position.copy(pt);
       }
 
-      // Dynamic Route & Beacon Color (RED -> CYAN -> GREEN)
       const isReunited = activeRescueStage === 'FAMILY';
       const isMedicalOrHospital = activeRescueStage === 'MEDICAL' || activeRescueStage === 'HOSPITAL' || activeRescueStage === 'SHELTER';
       const targetColor = isReunited ? 0x10b981 : isMedicalOrHospital ? 0x38bdf8 : 0xef4444;
@@ -1277,6 +1330,10 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
     selectEntity('VICTIM', 'VY-2026-0002047');
   };
 
+  const focusOnShelter = () => {
+    flyCameraTo(new THREE.Vector3(120, 45, 95), new THREE.Vector3(75, 10, 55), 1200);
+  };
+
   const focusOnRescueTeam = () => {
     flyCameraTo(new THREE.Vector3(45, 25, 25), new THREE.Vector3(15, 2, 0), 1200);
     selectEntity('TEAM', 'TEAM-BRAVO-02');
@@ -1318,11 +1375,11 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
                 3D CITY TWIN
               </span>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/40 font-semibold tracking-wider">
-                SIMULATION MODE
+                STRUCTURED SIMULATION
               </span>
             </div>
             <div className="text-[11px] text-slate-400 font-mono tracking-tight">
-              Command Complex Rooftop / Old Bridge Sector • Spacious Grid
+              Command Rooftop Refuge Pad • Safe Shelter 01 Humanitarian Complex
             </div>
           </div>
         </div>
@@ -1335,30 +1392,35 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
             <span className="font-bold">Wave ({waveCountdown}s)</span>
           </div>
 
+          {/* Focus Victim Button */}
+          <button 
+            onClick={focusOnVictim}
+            className="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-rose-950/80 hover:bg-rose-900/80 border border-rose-500/50 text-rose-300 transition cursor-pointer"
+            title="Fly camera directly to Structured Rooftop Victims Pad"
+          >
+            <Users className="w-3.5 h-3.5 text-rose-400" />
+            <span>🎯 Victims (Pad P1)</span>
+          </button>
+
+          {/* Focus Shelter Button */}
+          <button
+            onClick={focusOnShelter}
+            className="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-emerald-950/80 hover:bg-emerald-900/80 border border-emerald-500/50 text-emerald-300 transition cursor-pointer"
+            title="Fly camera directly to Safe Shelter 01 Humanitarian Complex"
+          >
+            <Home className="w-3.5 h-3.5 text-emerald-400" />
+            <span>🛡️ Shelter 01 (157 Pax)</span>
+          </button>
+
           {/* Focus Family Reunion Button */}
           <button
             onClick={focusOnFamilyReunion}
-            className="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-purple-950/80 hover:bg-purple-900 border border-purple-500/40 text-purple-300 transition cursor-pointer"
+            className="hidden sm:flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-purple-950/80 hover:bg-purple-900 border border-purple-500/40 text-purple-300 transition cursor-pointer"
             title="Fly camera to Family Reunification Center RC-02"
           >
             <Heart className="w-3.5 h-3.5 text-pink-400 fill-current" />
-            <span className="hidden sm:inline">RC-02 Reunion</span>
+            <span>RC-02 Reunion</span>
           </button>
-
-          {/* Victims Count Pill */}
-          <button 
-            onClick={focusOnVictim}
-            className="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-rose-950/80 border border-rose-500/40 text-rose-300 hover:bg-rose-900/60 transition cursor-pointer"
-          >
-            <Users className="w-3.5 h-3.5 text-rose-400" />
-            <span>Victims (14)</span>
-          </button>
-
-          {/* Shelter Pill */}
-          <div className="hidden md:flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-emerald-950/80 border border-emerald-500/40 text-emerald-300">
-            <Home className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Shelter (92%)</span>
-          </div>
 
           {/* Fullscreen Button */}
           <button
@@ -1427,23 +1489,30 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
             <button
               onClick={focusOnVictim}
               className="px-2 py-1 rounded text-[11px] font-mono bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40 transition"
-              title="Fly camera to critical rooftop victim"
+              title="Fly camera to structured rooftop victim refuge pad"
             >
-              🎯 Focus Victim
+              🎯 Victims Pad
+            </button>
+            <button
+              onClick={focusOnShelter}
+              className="px-2 py-1 rounded text-[11px] font-mono bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 transition"
+              title="Fly camera to Safe Shelter 01 humanitarian village"
+            >
+              🛡️ Shelter 01
             </button>
             <button
               onClick={focusOnRescueTeam}
               className="px-2 py-1 rounded text-[11px] font-mono bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 border border-sky-500/40 transition"
               title="Fly camera to rescue boat"
             >
-              🚤 Focus Team
+              🚤 Rescue Team
             </button>
             <button
               onClick={focusOnFamilyReunion}
               className="px-2 py-1 rounded text-[11px] font-mono bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/40 transition"
               title="Fly camera to Family Reunification Center RC-02"
             >
-              💖 Reunion RC-02
+              💖 RC-02
             </button>
             <button
               onClick={resetCamera}
@@ -1471,7 +1540,7 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
             <div className="text-[10px] text-slate-300 mt-0.5">
               STAGE: <strong className="text-cyan-300">{activeRescueStage}</strong> ({activeRescueStage === 'FAMILY' ? 'SAFE & REUNITED' : 'CRITICAL RESCUE'})
             </div>
-            <div className="text-[10px] text-cyan-400 font-mono">LOCATION: OLD BRIDGE ROOFTOP (+42m)</div>
+            <div className="text-[10px] text-cyan-400 font-mono">LOCATION: ROOFTOP REFUGE PAD (+42m)</div>
           </div>
         </div>
 
@@ -1498,9 +1567,7 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
 
       {/* 5. BOTTOM CONTROL PANEL OF 3D TWIN */}
       <div className="bg-[#070e1c]/95 border-t border-slate-800 p-3 z-20 shrink-0">
-        {/* Top Header of Bottom Panel */}
         <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-800/80">
-          {/* Tabs */}
           <div className="flex items-center space-x-2 font-mono text-xs">
             <button
               onClick={() => setThreatAssessmentTab('PLANS')}
@@ -1525,7 +1592,6 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
             </button>
           </div>
 
-          {/* Right Feasibility Status */}
           <div className="flex items-center space-x-2 font-mono text-xs">
             <span className="text-slate-400 text-[11px]">OPTIMAL PATH:</span>
             <span className="px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-extrabold tracking-wider">
@@ -1534,7 +1600,6 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
           </div>
         </div>
 
-        {/* Tab Content 1: AI Rescue Plan Cards */}
         {threatAssessmentTab === 'PLANS' ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
             {aiRescuePlans.map((plan) => {
@@ -1594,7 +1659,6 @@ export const SimulatedCityTwin3D: React.FC<SimulatedCityTwinProps> = ({
             })}
           </div>
         ) : (
-          /* Tab Content 2: Threat Assessment Telemetry */
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2 font-mono text-xs">
             <div className="p-2 rounded bg-slate-900/80 border border-slate-800">
               <div className="text-[10px] text-slate-400">WATER LEVEL</div>
